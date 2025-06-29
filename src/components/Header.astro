@@ -16,9 +16,9 @@
         <!-- Desktop Navigation -->
         <nav class="hidden lg:flex space-x-1">
           <a href="/" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.home">Home</a>
-          <a href="/dashboard" class="px-3 py-2 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg" data-i18n="header.dashboard">Dashboard</a>
-          <a href="#" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.sprints">Sprints</a>
-          <a href="#" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.retrospectives">Retrospectives</a>
+          <a href="/dashboard" class="px-3 py-2 text-sm font-medium hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.dashboard">Dashboard</a>
+          <a href="/sprints" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.sprints">Sprints</a>
+          <a href="/retrospectives" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" data-i18n="header.retrospectives">Retrospectives</a>
         </nav>
       </div>
       
@@ -151,6 +151,27 @@
         renderHeaderLanguageSelector();
       }, 100);
     };
+
+    // Highlight current page in navigation
+    function highlightCurrentPage() {
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll('nav a');
+      
+      navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath || (currentPath === '/' && href === '/') || 
+            (currentPath.startsWith(href) && href !== '/')) {
+          link.classList.remove('text-gray-600');
+          link.classList.add('text-gray-900', 'bg-gray-100');
+        } else {
+          link.classList.remove('text-gray-900', 'bg-gray-100');
+          link.classList.add('text-gray-600');
+        }
+      });
+    }
+
+    // Initial highlight
+    highlightCurrentPage();
   });
   
   // Update user info in header
