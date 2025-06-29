@@ -287,8 +287,8 @@ function getLocalizedActiveSprint() {
       endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days ahead
       status: "ACTIVE",
       goal: "Maintain operational existence with minimum human functionality KPIs",
-      totalPoints: 89,
-      completedPoints: 23,
+      totalPoints: 31,
+      completedPoints: 7,
       userId: 1
     };
   }
@@ -301,10 +301,57 @@ function getLocalizedActiveSprint() {
     endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 días adelante
     status: "ACTIVE",
     goal: "Mantener la existencia operativa con KPIs mínimos de funcionalidad humana",
-    totalPoints: 89,
-    completedPoints: 23,
+    totalPoints: 31,
+    completedPoints: 7,
     userId: 1
   };
+}
+
+// Función para generar datos de burndown realistas
+function generateBurndownData(activeSprint) {
+  if (!activeSprint) return { ideal: [], actual: [] };
+  
+  const totalPoints = activeSprint.totalPoints;
+  const completedPoints = activeSprint.completedPoints;
+  const startDate = new Date(activeSprint.startDate);
+  const endDate = new Date(activeSprint.endDate);
+  const currentDate = new Date();
+  
+  const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+  const daysElapsed = Math.min(totalDays, Math.ceil((currentDate - startDate) / (1000 * 60 * 60 * 24)));
+  
+  // Generate ideal burndown (linear)
+  const ideal = [];
+  for (let day = 0; day <= totalDays; day++) {
+    const idealRemaining = totalPoints - (totalPoints * day / totalDays);
+    ideal.push(Math.max(0, idealRemaining));
+  }
+  
+  // Generate actual burndown with realistic patterns
+  const actual = [];
+  const dailyVelocity = completedPoints / Math.max(1, daysElapsed);
+  
+  for (let day = 0; day <= totalDays; day++) {
+    if (day === 0) {
+      actual.push(totalPoints);
+    } else if (day <= daysElapsed) {
+      // Add realistic variance
+      const baseProgress = dailyVelocity * day;
+      const variance = Math.sin(day * 0.8) * 1.5; // Daily variations
+      const weekendSlowdown = (day % 7 === 0 || day % 7 === 6) ? -0.5 : 0; // Weekend effect
+      const sprintStart = day <= 2 ? -1 : 0; // Slow start
+      const sprintEnd = day >= totalDays - 2 ? 1 : 0; // Sprint push
+      
+      const actualCompleted = Math.min(totalPoints, Math.max(0, 
+        baseProgress + variance + weekendSlowdown + sprintStart + sprintEnd
+      ));
+      actual.push(Math.max(0, totalPoints - actualCompleted));
+    } else {
+      actual.push(null); // Future days
+    }
+  }
+  
+  return { ideal, actual };
 }
 
 // Épicas predefinidas para el demo
@@ -316,12 +363,8 @@ export const $stories = atom(getLocalizedStories());
 // Sprint activo
 export const $activeSprint = atom(getLocalizedActiveSprint());
 
-// Datos para burndown chart
-export const $burndownData = atom({
-  ideal: [89, 83, 77, 71, 65, 59, 53, 47, 41, 35, 29, 23, 17, 11, 5, 0],
-  actual: [89, 87, 85, 82, 78, 75, 71, 65, 58, 52, 47, 42, 35, 28, 23, null],
-  days: Array.from({length: 15}, (_, i) => `Día ${i + 1}`)
-});
+// Datos para burndown chart (generados dinámicamente)
+export const $burndownData = atom(generateBurndownData(getLocalizedActiveSprint()));
 
 // Funciones para manipular datos
 export function updateStoryStatus(storyId, newStatus) {
@@ -331,7 +374,7 @@ export function updateStoryStatus(storyId, newStatus) {
   );
   $stories.set(updatedStories);
   
-  // Simular actualización de burndown
+  // Actualizar puntos completados en el sprint
   updateBurndownData();
 }
 
@@ -356,10 +399,13 @@ export function updateBurndownData() {
     .filter(s => s.status === 'DONE')
     .reduce((sum, s) => sum + s.points, 0);
   
-  $activeSprint.set({
+  const updatedSprint = {
     ...activeSprint,
     completedPoints
-  });
+  };
+  
+  $activeSprint.set(updatedSprint);
+  $burndownData.set(generateBurndownData(updatedSprint));
 }
 
 export function getStoriesByStatus(status) {
@@ -379,6 +425,8 @@ if (typeof window !== 'undefined') {
   window.addEventListener('localeChanged', () => {
     $epics.set(getLocalizedEpics());
     $stories.set(getLocalizedStories());
-    $activeSprint.set(getLocalizedActiveSprint());
+    const newActiveSprint = getLocalizedActiveSprint();
+    $activeSprint.set(newActiveSprint);
+    $burndownData.set(generateBurndownData(newActiveSprint));
   });
 }
