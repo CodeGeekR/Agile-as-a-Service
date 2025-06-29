@@ -514,7 +514,7 @@ import LanguageSelector from '../components/LanguageSelector.jsx';
 
   <!-- Mobile Quick Access Button -->
   <div class="md:hidden fixed bottom-6 right-6 z-50">
-    <button onclick="showAuthModal('demo')" class="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
+    <button onclick="handleQuickAccess()" class="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
@@ -726,6 +726,20 @@ import LanguageSelector from '../components/LanguageSelector.jsx';
     // Initial content update
     updatePageContent();
   });
+
+  // Quick Access Function - Check if user is logged in
+  window.handleQuickAccess = function() {
+    const token = localStorage.getItem('aaas-auth-token');
+    const userData = localStorage.getItem('aaas-user');
+    
+    // If user is already logged in, go directly to dashboard
+    if (token && userData) {
+      window.location.href = '/dashboard';
+    } else {
+      // If not logged in, show demo modal
+      showAuthModal('demo');
+    }
+  };
 
   // Auth Modal Functions
   window.showAuthModal = function(mode = 'login') {
