@@ -13,7 +13,7 @@ import Header from '../components/Header.astro';
         <div class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <!-- Sprint Info -->
           <div class="min-w-0 flex-1">
-            <div class="flex items-start space-x-3">
+            <div class="flex items-center space-x-3">
               <div class="flex-shrink-0">
                 <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,19 +22,10 @@ import Header from '../components/Header.astro';
                 </div>
               </div>
               <div class="min-w-0 flex-1">
-                <!-- Título responsive con diferentes tamaños según el dispositivo -->
-                <h1 class="text-sm sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight" id="sprint-title" data-i18n="dashboard.title">
+                <h1 class="text-lg sm:text-xl font-semibold text-gray-900 truncate" id="sprint-title" data-i18n="dashboard.title">
                   Sprint: "Supervivencia Básica Q1 2025"
                 </h1>
-                <!-- Versión móvil más corta del título -->
-                <h1 class="block sm:hidden text-sm font-semibold text-gray-900 leading-tight" id="sprint-title-mobile">
-                  Sprint: Supervivencia Básica
-                </h1>
-                <!-- Ocultar título principal en móviles -->
-                <h1 class="hidden sm:block text-sm sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight" id="sprint-title-desktop" data-i18n="dashboard.title">
-                  Sprint: "Supervivencia Básica Q1 2025"
-                </h1>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 leading-tight" id="sprint-summary" data-i18n="dashboard.loading">
+                <p class="text-sm text-gray-500 mt-1" id="sprint-summary" data-i18n="dashboard.loading">
                   Cargando información del sprint...
                 </p>
               </div>
@@ -48,12 +39,11 @@ import Header from '../components/Header.astro';
               🔥 En Crisis
             </div>
             <div class="flex space-x-2">
-              <button id="new-story-btn" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors" data-i18n="dashboard.createStory">
-                <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button id="new-story-btn" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors" data-i18n="dashboard.createStory">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                <span class="hidden sm:inline">Crear Historia</span>
-                <span class="sm:hidden">Nueva</span>
+                Crear Historia
               </button>
               <button id="sprint-planning-btn" class="hidden sm:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors" data-i18n="dashboard.sprintPlanning">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +74,7 @@ import Header from '../components/Header.astro';
         <!-- Kanban Board - Takes most space -->
         <div class="xl:col-span-3">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-base sm:text-lg font-semibold text-gray-900" data-i18n="dashboard.kanbanTitle">
+            <h2 class="text-lg font-semibold text-gray-900" data-i18n="dashboard.kanbanTitle">
               Tablero Kanban de la Existencia
             </h2>
             <!-- Mobile Menu Button -->
@@ -146,12 +136,6 @@ import Header from '../components/Header.astro';
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         <span class="text-xs">Charts</span>
-      </button>
-      <button onclick="window.location.href='/'" class="flex flex-col items-center space-y-1 p-2 text-gray-600">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-        <span class="text-xs">Home</span>
       </button>
     </div>
   </div>
@@ -432,23 +416,8 @@ import Header from '../components/Header.astro';
       const progress = Math.round((sprint.completedPoints / sprint.totalPoints) * 100);
       const velocity = (sprint.completedPoints / 11).toFixed(1);
       
-      // Update sprint title and summary with mobile-responsive versions
-      const currentLocale = getLocale();
-      const fullTitle = currentLocale === 'en' ? 'Sprint: "Basic Survival Q1 2025"' : 'Sprint: "Supervivencia Básica Q1 2025"';
-      const shortTitle = currentLocale === 'en' ? 'Sprint: Basic Survival' : 'Sprint: Supervivencia Básica';
-      
-      // Update desktop title
-      const desktopTitle = document.getElementById('sprint-title-desktop');
-      if (desktopTitle) {
-        desktopTitle.textContent = fullTitle;
-      }
-      
-      // Update mobile title
-      const mobileTitle = document.getElementById('sprint-title-mobile');
-      if (mobileTitle) {
-        mobileTitle.textContent = shortTitle;
-      }
-      
+      // Update sprint title and summary
+      document.getElementById('sprint-title').textContent = t('dashboard.title');
       document.getElementById('sprint-summary').textContent = 
         `${sprintStories.length} ${t('dashboard.activeStories')} • ${daysRemaining} ${t('dashboard.daysRemainingText')} • ${remainingPoints} ${t('dashboard.pointsToComplete')}`;
       
@@ -548,12 +517,12 @@ import Header from '../components/Header.astro';
       renderBurndownChart();
       
       // Update recent activity
-      let currentLocaleForActivity = getLocale();
-      const coffeeTask = currentLocaleForActivity === 'en' ? 'Make coffee' : 'Hacer café';
-      const bedTask = currentLocaleForActivity === 'en' ? 'Make the bed' : 'Hacer la cama';
-      const motivationIssue = currentLocaleForActivity === 'en' ? 'Lack of motivation affecting sprint velocity' : 'Falta de motivación afectando el velocity del sprint';
-      const waitingText = currentLocaleForActivity === 'en' ? 'is waiting for external dependency resolution (buy coffee)' : 'está esperando resolución de dependencia externa (comprar café)';
-      const movedText = currentLocaleForActivity === 'en' ? 'moved to Done' : 'movida a Done';
+      const locale = getLocale();
+      const coffeeTask = locale === 'en' ? 'Make coffee' : 'Hacer café';
+      const bedTask = locale === 'en' ? 'Make the bed' : 'Hacer la cama';
+      const motivationIssue = locale === 'en' ? 'Lack of motivation affecting sprint velocity' : 'Falta de motivación afectando el velocity del sprint';
+      const waitingText = locale === 'en' ? 'is waiting for external dependency resolution (buy coffee)' : 'está esperando resolución de dependencia externa (comprar café)';
+      const movedText = locale === 'en' ? 'moved to Done' : 'movida a Done';
       
       document.getElementById('recent-activity').innerHTML = `
         <div class="flex items-start space-x-3">
@@ -771,15 +740,13 @@ import Header from '../components/Header.astro';
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold text-gray-900">${t('dashboard.burndownTitle')}</h3>
               <div class="flex items-center space-x-3 text-xs">
-                <div class="hidden sm:flex items-center space-x-4">
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-0.5 bg-emerald-500 rounded" style="border-top: 1px dashed #10b981;"></div>
-                    <span class="text-gray-500">${t('dashboard.ideal')}</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
-                    <span class="text-gray-500">${t('dashboard.reality')}</span>
-                  </div>
+                <div class="flex items-center space-x-1">
+                  <div class="w-3 h-0.5 bg-emerald-500 rounded" style="border: 1px dashed #10b981;"></div>
+                  <span class="text-gray-500">${t('dashboard.ideal')}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
+                  <span class="text-gray-500">${t('dashboard.reality')}</span>
                 </div>
               </div>
             </div>
@@ -1057,27 +1024,6 @@ import Header from '../components/Header.astro';
     .grid.grid-cols-2 {
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
-    }
-  }
-  
-  /* Mobile title optimizations */
-  @media (max-width: 640px) {
-    #sprint-title-desktop {
-      display: none !important;
-    }
-    
-    #sprint-title-mobile {
-      display: block !important;
-    }
-  }
-  
-  @media (min-width: 641px) {
-    #sprint-title-mobile {
-      display: none !important;
-    }
-    
-    #sprint-title-desktop {
-      display: block !important;
     }
   }
 </style>
