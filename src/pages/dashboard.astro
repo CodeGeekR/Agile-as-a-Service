@@ -13,7 +13,7 @@ import Header from '../components/Header.astro';
         <div class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <!-- Sprint Info -->
           <div class="min-w-0 flex-1">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-start space-x-3">
               <div class="flex-shrink-0">
                 <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,41 +22,53 @@ import Header from '../components/Header.astro';
                 </div>
               </div>
               <div class="min-w-0 flex-1">
-                <h1 class="text-lg sm:text-xl font-semibold text-gray-900 truncate" id="sprint-title" data-i18n="dashboard.title">
+                <!-- Título responsive con diferentes tamaños según el dispositivo -->
+                <h1 class="text-sm sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight" id="sprint-title" data-i18n="dashboard.title">
                   Sprint: "Supervivencia Básica Q1 2025"
                 </h1>
-                <p class="text-sm text-gray-500 mt-1" id="sprint-summary" data-i18n="dashboard.loading">
+                <!-- Versión móvil más corta del título -->
+                <h1 class="block sm:hidden text-sm font-semibold text-gray-900 leading-tight" id="sprint-title-mobile">
+                  Sprint: Supervivencia Básica
+                </h1>
+                <!-- Ocultar título principal en móviles -->
+                <h1 class="hidden sm:block text-sm sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight" id="sprint-title-desktop" data-i18n="dashboard.title">
+                  Sprint: "Supervivencia Básica Q1 2025"
+                </h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1 leading-tight" id="sprint-summary" data-i18n="dashboard.loading">
                   Cargando información del sprint...
                 </p>
               </div>
             </div>
           </div>
           
-          <!-- Actions - Desktop Only -->
-          <div class="hidden lg:flex items-center space-x-3">
+          <!-- Actions -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             <div id="sprint-status" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200" data-i18n="dashboard.inCrisis">
               <div class="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 animate-pulse"></div>
               🔥 En Crisis
             </div>
-            <button id="new-story-btn" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors" data-i18n="dashboard.createStory">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Crear Historia
-            </button>
-            <button id="sprint-planning-btn" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors" data-i18n="dashboard.sprintPlanning">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              Sprint Planning
-            </button>
+            <div class="flex space-x-2">
+              <button id="new-story-btn" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors" data-i18n="dashboard.createStory">
+                <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="hidden sm:inline">Crear Historia</span>
+                <span class="sm:hidden">Nueva</span>
+              </button>
+              <button id="sprint-planning-btn" class="hidden sm:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors" data-i18n="dashboard.sprintPlanning">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Sprint Planning
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Content Container -->
-    <div class="px-4 sm:px-6 lg:px-8 py-6 space-y-8 pb-24 lg:pb-8">
+    <div class="px-4 sm:px-6 lg:px-8 py-6 space-y-8">
       <!-- Sprint Metrics - Mobile Optimized -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="sprint-metrics">
         <!-- Metrics will be populated by JavaScript -->
@@ -72,9 +84,15 @@ import Header from '../components/Header.astro';
         <!-- Kanban Board - Takes most space -->
         <div class="xl:col-span-3">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-semibold text-gray-900" data-i18n="dashboard.kanbanTitle">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-900" data-i18n="dashboard.kanbanTitle">
               Tablero Kanban de la Existencia
             </h2>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
           </div>
           
           <!-- Kanban Container -->
@@ -106,59 +124,35 @@ import Header from '../components/Header.astro';
     </div>
   </main>
 
-  <!-- Mobile Bottom Navigation - Enhanced -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb">
-    <div class="grid grid-cols-5 h-16">
-      <!-- Home Button -->
-      <button onclick="window.location.href='/'" class="flex flex-col items-center justify-center space-y-1 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-        <span class="text-xs font-medium">Home</span>
-      </button>
-      
-      <!-- Board Button -->
-      <button onclick="scrollToKanban()" class="flex flex-col items-center justify-center space-y-1 p-2 text-blue-600 bg-blue-50 transition-colors">
+  <!-- Mobile Bottom Navigation -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50">
+    <div class="flex items-center justify-around">
+      <button class="flex flex-col items-center space-y-1 p-2 text-gray-600">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
         </svg>
-        <span class="text-xs font-medium">Board</span>
+        <span class="text-xs">Board</span>
       </button>
-      
-      <!-- New Story Button - Central -->
-      <button id="mobile-new-story" class="flex flex-col items-center justify-center space-y-1 p-2 text-white bg-blue-600 hover:bg-blue-700 transition-colors relative">
-        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button id="mobile-new-story" class="flex flex-col items-center space-y-1 p-2 text-blue-600">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
         </div>
-        <span class="text-xs font-medium">Nueva</span>
+        <span class="text-xs">New</span>
       </button>
-      
-      <!-- Sprint Planning Button -->
-      <button id="mobile-sprint-planning" class="flex flex-col items-center justify-center space-y-1 p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <span class="text-xs font-medium">Planning</span>
-      </button>
-      
-      <!-- Charts Button -->
-      <button onclick="scrollToCharts()" class="flex flex-col items-center justify-center space-y-1 p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors">
+      <button class="flex flex-col items-center space-y-1 p-2 text-gray-600">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
-        <span class="text-xs font-medium">Charts</span>
+        <span class="text-xs">Charts</span>
       </button>
-    </div>
-  </div>
-
-  <!-- Mobile Action Buttons - Floating -->
-  <div class="lg:hidden fixed top-20 right-4 z-40 space-y-3">
-    <!-- Sprint Status Indicator -->
-    <div id="mobile-sprint-status" class="inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200 shadow-lg backdrop-blur-sm bg-white bg-opacity-90" data-i18n="dashboard.inCrisis">
-      <div class="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 animate-pulse"></div>
-      🔥 Crisis
+      <button onclick="window.location.href='/'" class="flex flex-col items-center space-y-1 p-2 text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="text-xs">Home</span>
+      </button>
     </div>
   </div>
 
@@ -268,7 +262,7 @@ import Header from '../components/Header.astro';
             status: "ACTIVE",
             goal: "Maintain operational existence with minimum human functionality KPIs",
             totalPoints: 31,
-            completedPoints: 7,
+            completedPoints: 2,
             userId: user.id
           }
         };
@@ -353,7 +347,7 @@ import Header from '../components/Header.astro';
             status: "ACTIVE",
             goal: "Mantener la existencia operativa con KPIs mínimos de funcionalidad humana",
             totalPoints: 31,
-            completedPoints: 7,
+            completedPoints: 2,
             userId: user.id
           }
         };
@@ -376,7 +370,7 @@ import Header from '../components/Header.astro';
       });
       
       // Preserve sprint progress
-      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 7;
+      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 2;
       
       appData = localizedData;
       localStorage.setItem('aaas-data', JSON.stringify(appData));
@@ -438,17 +432,32 @@ import Header from '../components/Header.astro';
       const progress = Math.round((sprint.completedPoints / sprint.totalPoints) * 100);
       const velocity = (sprint.completedPoints / 11).toFixed(1);
       
-      // Update sprint title and summary
-      document.getElementById('sprint-title').textContent = t('dashboard.title');
+      // Update sprint title and summary with mobile-responsive versions
+      const currentLocale = getLocale();
+      const fullTitle = currentLocale === 'en' ? 'Sprint: "Basic Survival Q1 2025"' : 'Sprint: "Supervivencia Básica Q1 2025"';
+      const shortTitle = currentLocale === 'en' ? 'Sprint: Basic Survival' : 'Sprint: Supervivencia Básica';
+      
+      // Update desktop title
+      const desktopTitle = document.getElementById('sprint-title-desktop');
+      if (desktopTitle) {
+        desktopTitle.textContent = fullTitle;
+      }
+      
+      // Update mobile title
+      const mobileTitle = document.getElementById('sprint-title-mobile');
+      if (mobileTitle) {
+        mobileTitle.textContent = shortTitle;
+      }
+      
       document.getElementById('sprint-summary').textContent = 
         `${sprintStories.length} ${t('dashboard.activeStories')} • ${daysRemaining} ${t('dashboard.daysRemainingText')} • ${remainingPoints} ${t('dashboard.pointsToComplete')}`;
       
-      // Update metrics with mobile-optimized design
+      // Update metrics with Linear-inspired design
       document.getElementById('sprint-metrics').innerHTML = `
         <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-xl sm:text-2xl font-bold ${remainingPoints > 20 ? 'text-red-600' : 'text-amber-600'}">${remainingPoints}</div>
+              <div class="text-2xl font-bold ${remainingPoints > 20 ? 'text-red-600' : 'text-amber-600'}">${remainingPoints}</div>
               <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">${t('dashboard.pointsRemaining')}</div>
             </div>
             <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
@@ -462,7 +471,7 @@ import Header from '../components/Header.astro';
         <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-xl sm:text-2xl font-bold ${daysRemaining <= 3 ? 'text-red-600' : 'text-amber-600'}">${daysRemaining}</div>
+              <div class="text-2xl font-bold ${daysRemaining <= 3 ? 'text-red-600' : 'text-amber-600'}">${daysRemaining}</div>
               <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">${t('dashboard.daysRemaining')}</div>
             </div>
             <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
@@ -476,7 +485,7 @@ import Header from '../components/Header.astro';
         <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-xl sm:text-2xl font-bold text-emerald-600">${progress}%</div>
+              <div class="text-2xl font-bold text-emerald-600">${progress}%</div>
               <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">${t('dashboard.completed')}</div>
             </div>
             <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
@@ -490,7 +499,7 @@ import Header from '../components/Header.astro';
         <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-xl sm:text-2xl font-bold ${velocity < 2 ? 'text-red-600' : 'text-emerald-600'}">${velocity}</div>
+              <div class="text-2xl font-bold ${velocity < 2 ? 'text-red-600' : 'text-emerald-600'}">${velocity}</div>
               <div class="text-xs font-medium text-gray-500 uppercase tracking-wide">${t('dashboard.velocity')}</div>
             </div>
             <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -502,32 +511,9 @@ import Header from '../components/Header.astro';
         </div>
       `;
       
-      // Update mobile sprint status
+      // Update alert banner with Linear-inspired design
       const successProbability = Math.max(0, Math.min(100, 100 - (remainingPoints / (daysRemaining * velocity)) * 20));
-      const mobileStatus = document.getElementById('mobile-sprint-status');
-      if (mobileStatus) {
-        if (successProbability < 30) {
-          mobileStatus.className = 'inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200 shadow-lg backdrop-blur-sm bg-white bg-opacity-90';
-          mobileStatus.innerHTML = `
-            <div class="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 animate-pulse"></div>
-            🔥 Crisis
-          `;
-        } else if (successProbability < 70) {
-          mobileStatus.className = 'inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 shadow-lg backdrop-blur-sm bg-white bg-opacity-90';
-          mobileStatus.innerHTML = `
-            <div class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 animate-pulse"></div>
-            ⚠️ Riesgo
-          `;
-        } else {
-          mobileStatus.className = 'inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200 shadow-lg backdrop-blur-sm bg-white bg-opacity-90';
-          mobileStatus.innerHTML = `
-            <div class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            ✅ Bien
-          `;
-        }
-      }
       
-      // Update alert banner
       if (successProbability < 70) {
         document.getElementById('alert-banner').className = '';
         document.getElementById('alert-banner').innerHTML = `
@@ -640,7 +626,7 @@ import Header from '../components/Header.astro';
                data-story-id="${story.id}"
                ondragstart="handleDragStart(event)"
                ondragend="handleDragEnd(event)">
-            <div class="p-3 sm:p-4">
+            <div class="p-4">
               <div class="flex items-start justify-between mb-3">
                 <div class="flex items-start space-x-2 flex-1 min-w-0">
                   <span class="text-sm flex-shrink-0 mt-0.5">${priorityIcon}</span>
@@ -654,13 +640,13 @@ import Header from '../components/Header.astro';
               </div>
               
               <p class="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">
-                ${story.description.substring(0, 80)}...
+                ${story.description.substring(0, 100)}...
               </p>
               
               <div class="flex items-center justify-between">
                 <span class="text-xs text-gray-400 font-mono">#${story.id}</span>
                 <div class="flex items-center space-x-2">
-                  ${story.tags.slice(0, 1).map(tag => `
+                  ${story.tags.slice(0, 2).map(tag => `
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
                       ${tag}
                     </span>
@@ -694,9 +680,9 @@ import Header from '../components/Header.astro';
       };
       
       document.getElementById('kanban-container').innerHTML = `
-        <div class="flex space-x-4 sm:space-x-6 pb-6 min-w-max lg:min-w-0">
+        <div class="flex space-x-6 pb-6 min-w-max lg:min-w-0">
           <!-- TODO Column -->
-          <div class="w-72 sm:w-80 lg:flex-1 ${columnClasses['TODO']} rounded-xl p-3 sm:p-4 min-h-96" 
+          <div class="w-80 lg:flex-1 ${columnClasses['TODO']} rounded-xl p-4 min-h-96" 
                ondragover="handleDragOver(event)" 
                ondrop="handleDrop(event, 'TODO')">
             <div class="flex items-center justify-between mb-4">
@@ -711,7 +697,7 @@ import Header from '../components/Header.astro';
             <div class="space-y-3">
               ${todoStories.map(renderStoryCard).join('')}
             </div>
-            <button onclick="showNewStoryModal()" class="w-full mt-4 p-3 sm:p-4 border-2 border-dashed border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors rounded-lg text-sm font-medium group">
+            <button onclick="showNewStoryModal()" class="w-full mt-4 p-4 border-2 border-dashed border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors rounded-lg text-sm font-medium group">
               <div class="flex items-center justify-center space-x-2">
                 <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -722,7 +708,7 @@ import Header from '../components/Header.astro';
           </div>
           
           <!-- IN PROGRESS Column -->
-          <div class="w-72 sm:w-80 lg:flex-1 ${columnClasses['IN_PROGRESS']} rounded-xl p-3 sm:p-4 min-h-96" 
+          <div class="w-80 lg:flex-1 ${columnClasses['IN_PROGRESS']} rounded-xl p-4 min-h-96" 
                ondragover="handleDragOver(event)" 
                ondrop="handleDrop(event, 'IN_PROGRESS')">
             <div class="flex items-center justify-between mb-4">
@@ -752,7 +738,7 @@ import Header from '../components/Header.astro';
           </div>
           
           <!-- DONE Column -->
-          <div class="w-72 sm:w-80 lg:flex-1 ${columnClasses['DONE']} rounded-xl p-3 sm:p-4 min-h-96" 
+          <div class="w-80 lg:flex-1 ${columnClasses['DONE']} rounded-xl p-4 min-h-96" 
                ondragover="handleDragOver(event)" 
                ondrop="handleDrop(event, 'DONE')">
             <div class="flex items-center justify-between mb-4">
@@ -784,14 +770,16 @@ import Header from '../components/Header.astro';
           <div class="px-4 py-3 border-b border-gray-200">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold text-gray-900">${t('dashboard.burndownTitle')}</h3>
-              <div class="hidden sm:flex items-center space-x-3 text-xs">
-                <div class="flex items-center space-x-1">
-                  <div class="w-3 h-0.5 bg-emerald-500 rounded" style="border: 1px dashed #10b981;"></div>
-                  <span class="text-gray-500">${t('dashboard.ideal')}</span>
-                </div>
-                <div class="flex items-center space-x-1">
-                  <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
-                  <span class="text-gray-500">${t('dashboard.reality')}</span>
+              <div class="flex items-center space-x-3 text-xs">
+                <div class="hidden sm:flex items-center space-x-4">
+                  <div class="flex items-center space-x-1">
+                    <div class="w-3 h-0.5 bg-emerald-500 rounded" style="border-top: 1px dashed #10b981;"></div>
+                    <span class="text-gray-500">${t('dashboard.ideal')}</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
+                    <span class="text-gray-500">${t('dashboard.reality')}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -805,33 +793,6 @@ import Header from '../components/Header.astro';
                 <p class="text-xs text-gray-400 mt-1">
                   ${successProbability < 50 ? t('dashboard.trendWorsening') : t('dashboard.trendImproving')}
                 </p>
-              </div>
-            </div>
-            
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm mb-4">
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <div class="font-medium text-gray-700 text-xs mb-1">Puntos Restantes</div>
-                <div class="text-lg font-bold ${remainingPoints > 20 ? 'text-red-600' : 'text-orange-600'}">
-                  ${remainingPoints}
-                </div>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <div class="font-medium text-gray-700 text-xs mb-1">Días Restantes</div>
-                <div class="text-lg font-bold ${daysRemaining <= 3 ? 'text-red-600' : 'text-orange-600'}">
-                  ${daysRemaining}
-                </div>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <div class="font-medium text-gray-700 text-xs mb-1">Velocity Actual</div>
-                <div class="text-lg font-bold ${velocity < 2 ? 'text-red-600' : 'text-green-600'}">
-                  ${velocity}
-                </div>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <div class="font-medium text-gray-700 text-xs mb-1">${t('dashboard.successProbability')}</div>
-                <div class="text-lg font-bold ${successProbability < 30 ? 'text-red-600' : successProbability < 70 ? 'text-orange-600' : 'text-green-600'}">
-                  ${Math.round(successProbability)}%
-                </div>
               </div>
             </div>
             
@@ -851,21 +812,6 @@ import Header from '../components/Header.astro';
         </div>
       `;
     }
-    
-    // Mobile Navigation Functions
-    window.scrollToKanban = function() {
-      document.getElementById('kanban-container').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    };
-    
-    window.scrollToCharts = function() {
-      document.getElementById('burndown-container').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    };
     
     // Drag and Drop functionality
     let draggedStoryId = null;
@@ -906,7 +852,7 @@ import Header from '../components/Header.astro';
       }
     };
     
-    // Modal functions with mobile-optimized design
+    // Modal functions with Linear-inspired design
     window.showNewStoryModal = function() {
       document.getElementById('modals-container').innerHTML = `
         <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -969,44 +915,6 @@ import Header from '../components/Header.astro';
       selectPoints(3);
     };
     
-    window.showSprintPlanningModal = function() {
-      // Import and render Sprint Planning Modal
-      import('../components/SprintPlanningModal.jsx').then(module => {
-        const SprintPlanningModal = module.default;
-        
-        // Create a simple implementation for now
-        document.getElementById('modals-container').innerHTML = `
-          <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-              <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-t-2xl">
-                <div class="flex items-center justify-between">
-                  <h2 class="text-xl font-semibold">Sprint Planning</h2>
-                  <button onclick="closeModal()" class="text-white hover:text-gray-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <div class="p-6 text-center">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Sprint Planning Avanzado</h3>
-                <p class="text-gray-600 mb-6">Esta funcionalidad estará disponible en la próxima iteración del producto. Mientras tanto, puedes crear nuevas historias y gestionar el sprint actual.</p>
-                <button onclick="closeModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
-                  Entendido
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    };
-    
     window.selectPoints = function(points) {
       document.getElementById('story-points').value = points;
       document.querySelectorAll('.story-points-btn').forEach(btn => {
@@ -1050,10 +958,12 @@ import Header from '../components/Header.astro';
     };
     
     // Event listeners
-    document.getElementById('sprint-planning-btn')?.addEventListener('click', showSprintPlanningModal);
-    document.getElementById('new-story-btn')?.addEventListener('click', showNewStoryModal);
+    document.getElementById('sprint-planning-btn').addEventListener('click', () => {
+      alert(t('dashboard.sprintPlanningMessage'));
+    });
+    
+    document.getElementById('new-story-btn').addEventListener('click', showNewStoryModal);
     document.getElementById('mobile-new-story').addEventListener('click', showNewStoryModal);
-    document.getElementById('mobile-sprint-planning').addEventListener('click', showSprintPlanningModal);
     
     // Listen for language changes and update everything
     window.addEventListener('localeChanged', () => {
@@ -1070,7 +980,7 @@ import Header from '../components/Header.astro';
       });
       
       // Preserve sprint progress
-      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 7;
+      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 2;
       
       appData = localizedData;
       saveData();
@@ -1135,15 +1045,10 @@ import Header from '../components/Header.astro';
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   }
   
-  /* Mobile safe area support */
-  .safe-area-pb {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
-  /* Mobile bottom navigation enhancements */
+  /* Mobile bottom navigation spacing */
   @media (max-width: 1024px) {
     main {
-      padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+      padding-bottom: 80px;
     }
   }
   
@@ -1151,34 +1056,28 @@ import Header from '../components/Header.astro';
   @media (max-width: 640px) {
     .grid.grid-cols-2 {
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    
-    /* Optimize kanban columns for mobile */
-    #kanban-container .w-72 {
-      width: 280px;
-      min-width: 280px;
+      gap: 0.75rem;
     }
   }
   
-  /* Tablet optimizations */
-  @media (min-width: 641px) and (max-width: 1024px) {
-    #kanban-container .w-72 {
-      width: 320px;
-      min-width: 320px;
+  /* Mobile title optimizations */
+  @media (max-width: 640px) {
+    #sprint-title-desktop {
+      display: none !important;
+    }
+    
+    #sprint-title-mobile {
+      display: block !important;
     }
   }
   
-  /* Enhanced mobile touch targets */
-  @media (max-width: 768px) {
-    button {
-      min-height: 44px;
-      min-width: 44px;
+  @media (min-width: 641px) {
+    #sprint-title-mobile {
+      display: none !important;
     }
     
-    .story-points-btn {
-      min-height: 48px;
-      min-width: 48px;
+    #sprint-title-desktop {
+      display: block !important;
     }
   }
 </style>
