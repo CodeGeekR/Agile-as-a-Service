@@ -95,7 +95,49 @@ import Header from '../components/Header.astro';
         <div class="xl:col-span-1 space-y-6">
           <!-- Burndown Chart -->
           <div id="burndown-container">
-            <!-- This will be populated by JavaScript -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div class="px-4 py-3 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">
+                    Gráfico Burndown: "Sprint Actual"
+                  </h3>
+                  <div class="flex items-center space-x-2 text-xs">
+                    <div class="hidden sm:flex items-center space-x-4">
+                      <div class="flex items-center space-x-1">
+                        <div class="w-3 h-0.5 bg-green-600" style="border-top: 1px dashed #00875A;"></div>
+                        <span class="text-gray-500">Ideal</span>
+                      </div>
+                      <div class="flex items-center space-x-1">
+                        <div class="w-3 h-0.5 bg-blue-600"></div>
+                        <span class="text-gray-500">Real</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-4">
+                <div class="relative">
+                  <canvas 
+                    id="burndown-chart"
+                    class="w-full border border-gray-100 rounded bg-white"
+                    width="400"
+                    height="200"
+                    style="max-width: 100%; height: auto;"
+                  ></canvas>
+                </div>
+              </div>
+              
+              <div class="px-4 pb-4">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm mb-4" id="burndown-metrics">
+                  <!-- Metrics will be populated by JavaScript -->
+                </div>
+                
+                <div id="burndown-alert" class="p-3 rounded-lg text-sm">
+                  <!-- Alert will be populated by JavaScript -->
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Recent Activity -->
@@ -414,6 +456,271 @@ import Header from '../components/Header.astro';
       }, 3000);
     }
     
+    function renderBurndownChart() {
+      const canvas = document.getElementById('burndown-chart');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const sprint = appData.activeSprint;
+      
+      // Set canvas size for responsiveness
+      const container = canvas.parentElement;
+      const containerWidth = container.offsetWidth - 32; // Account for padding
+      const isMobile = window.innerWidth < 768;
+      
+      canvas.width = Math.max(containerWidth, 300);
+      canvas.height = isMobile ? 180 : 200;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Calculate chart area
+      const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+      const chartWidth = canvas.width - margin.left - margin.right;
+      const chartHeight = canvas.height - margin.top - margin.bottom;
+      
+      // Sprint data
+      const totalPoints = sprint.totalPoints;
+      const completedPoints = sprint.completedPoints;
+      const remainingPoints = totalPoints - completedPoints;
+      
+      // Calculate days
+      const startDate = new Date(sprint.startDate);
+      const endDate = new Date(sprint.endDate);
+      const currentDate = new Date();
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+      const daysElapsed = Math.min(totalDays, Math.ceil((currentDate - startDate) / (1000 * 60 * 60 * 24)));
+      
+      // Generate ideal burndown line
+      const idealData = [];
+      for (let day = 0; day <= totalDays; day++) {
+        const idealRemaining = totalPoints - (totalPoints * day / totalDays);
+        idealData.push(Math.max(0, idealRemaining));
+      }
+      
+      // Generate actual burndown data
+      const actualData = [];
+      const dailyVelocity = completedPoints / Math.max(1, daysElapsed);
+      
+      for (let day = 0; day <= totalDays; day++) {
+        if (day === 0) {
+          actualData.push(totalPoints);
+        } else if (day <= daysElapsed) {
+          const baseProgress = dailyVelocity * day;
+          const variance = Math.sin(day * 0.5) * 1.5;
+          const weekendSlowdown = (day % 7 === 0 || day % 7 === 6) ? -0.5 : 0;
+          const actualCompleted = Math.min(totalPoints, Math.max(0, baseProgress + variance + weekendSlowdown));
+          actualData.push(Math.max(0, totalPoints - actualCompleted));
+        } else {
+          actualData.push(null);
+        }
+      }
+      
+      // Set up coordinate system
+      const xScale = (day) => margin.left + (day / totalDays) * chartWidth;
+      const yScale = (points) => margin.top + ((totalPoints - points) / totalPoints) * chartHeight;
+      
+      // Draw background
+      ctx.fillStyle = '#FAFBFC';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw chart background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(margin.left, margin.top, chartWidth, chartHeight);
+      
+      // Draw grid lines
+      ctx.strokeStyle = '#E4E6EA';
+      ctx.lineWidth = 1;
+      
+      // Vertical grid lines
+      for (let day = 0; day <= totalDays; day += Math.ceil(totalDays / 7)) {
+        const x = xScale(day);
+        ctx.beginPath();
+        ctx.moveTo(x, margin.top);
+        ctx.lineTo(x, margin.top + chartHeight);
+        ctx.stroke();
+      }
+      
+      // Horizontal grid lines
+      const pointInterval = Math.ceil(totalPoints / 5);
+      for (let points = 0; points <= totalPoints; points += pointInterval) {
+        const y = yScale(points);
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(margin.left + chartWidth, y);
+        ctx.stroke();
+      }
+      
+      // Draw chart border
+      ctx.strokeStyle = '#DFE1E6';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(margin.left, margin.top, chartWidth, chartHeight);
+      
+      // Draw ideal burndown line (dashed green)
+      ctx.strokeStyle = '#00875A';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 4]);
+      ctx.beginPath();
+      
+      idealData.forEach((points, day) => {
+        const x = xScale(day);
+        const y = yScale(points);
+        
+        if (day === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw actual burndown line (solid blue)
+      ctx.strokeStyle = '#0052CC';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      
+      let lastValidPoint = null;
+      actualData.forEach((points, day) => {
+        if (points !== null) {
+          const x = xScale(day);
+          const y = yScale(points);
+          
+          if (lastValidPoint === null) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          lastValidPoint = { x, y, day, points };
+        }
+      });
+      ctx.stroke();
+      
+      // Draw data points on actual line
+      ctx.fillStyle = '#0052CC';
+      actualData.forEach((points, day) => {
+        if (points !== null) {
+          const x = xScale(day);
+          const y = yScale(points);
+          
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // Highlight current day
+          if (day === daysElapsed) {
+            ctx.strokeStyle = '#0052CC';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.stroke();
+          }
+        }
+      });
+      
+      // Draw current day indicator
+      if (daysElapsed <= totalDays) {
+        const currentX = xScale(daysElapsed);
+        ctx.strokeStyle = '#FF8B00';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        ctx.moveTo(currentX, margin.top);
+        ctx.lineTo(currentX, margin.top + chartHeight);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Current day label
+        ctx.fillStyle = '#FF8B00';
+        ctx.font = 'bold 10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('HOY', currentX, margin.top - 5);
+      }
+      
+      // Draw labels
+      ctx.fillStyle = '#172B4D';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      
+      // X-axis labels
+      for (let day = 0; day <= totalDays; day += Math.ceil(totalDays / 5)) {
+        const x = xScale(day);
+        const label = day === 0 ? 'Inicio' : day === totalDays ? 'Fin' : `D${day}`;
+        ctx.fillText(label, x, canvas.height - 10);
+      }
+      
+      // Y-axis labels
+      ctx.textAlign = 'right';
+      for (let points = 0; points <= totalPoints; points += pointInterval) {
+        const y = yScale(points);
+        ctx.fillText(points.toString(), margin.left - 5, y + 3);
+      }
+      
+      // Update burndown metrics
+      updateBurndownMetrics();
+    }
+    
+    function updateBurndownMetrics() {
+      const sprint = appData.activeSprint;
+      const remainingPoints = sprint.totalPoints - sprint.completedPoints;
+      const daysRemaining = Math.ceil((new Date(sprint.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+      const velocity = (sprint.completedPoints / 11).toFixed(1);
+      const successProbability = Math.max(0, Math.min(100, 100 - (remainingPoints / (daysRemaining * velocity)) * 20));
+      
+      document.getElementById('burndown-metrics').innerHTML = `
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-700 text-xs mb-1">Puntos Restantes</div>
+          <div class="text-lg font-bold ${remainingPoints > 20 ? 'text-red-600' : 'text-orange-600'}">
+            ${remainingPoints}
+          </div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-700 text-xs mb-1">Días Restantes</div>
+          <div class="text-lg font-bold ${daysRemaining <= 3 ? 'text-red-600' : 'text-orange-600'}">
+            ${daysRemaining}
+          </div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-700 text-xs mb-1">Velocity Actual</div>
+          <div class="text-lg font-bold ${velocity < 2 ? 'text-red-600' : 'text-green-600'}">
+            ${velocity}
+          </div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-700 text-xs mb-1">Probabilidad de Éxito</div>
+          <div class="text-lg font-bold ${successProbability < 30 ? 'text-red-600' : successProbability < 70 ? 'text-orange-600' : 'text-green-600'}">
+            ${Math.round(successProbability)}%
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('burndown-alert').className = `p-3 rounded-lg text-sm ${
+        successProbability < 30 ? 'bg-red-50 border border-red-200' : 
+        successProbability < 70 ? 'bg-yellow-50 border border-yellow-200' :
+        'bg-green-50 border border-green-200'
+      }`;
+      
+      document.getElementById('burndown-alert').innerHTML = `
+        <p class="${
+          successProbability < 30 ? 'text-red-800' : 
+          successProbability < 70 ? 'text-yellow-800' :
+          'text-green-800'
+        }">
+          <strong>
+            ${successProbability < 30 ? '🚨 Alerta Crítica del Sistema:' : 
+             successProbability < 70 ? '⚠️ Advertencia del Sistema:' :
+             '✅ Estado del Sistema:'}
+          </strong> 
+          ${successProbability < 30 ? 
+            ' Su existencia está significativamente por debajo de los KPIs establecidos. Se recomienda una reunión de crisis con su Scrum Master interno y considerar reducir el scope del sprint.' :
+            successProbability < 70 ?
+            ' Su productividad está en zona de riesgo. Considere implementar pair programming para tareas básicas y revisar impedimentos actuales.' :
+            ' Su sprint está en buen camino. Mantenga el momentum actual y prepare la retrospectiva de éxitos.'
+          }
+        </p>
+      `;
+    }
+    
     function renderDashboard() {
       const sprint = appData.activeSprint;
       const sprintStories = appData.stories.filter(s => s.sprintId === sprint.id);
@@ -730,61 +1037,6 @@ import Header from '../components/Header.astro';
       `;
     }
     
-    function renderBurndownChart() {
-      const sprint = appData.activeSprint;
-      const remainingPoints = sprint.totalPoints - sprint.completedPoints;
-      const daysRemaining = Math.ceil((new Date(sprint.endDate) - new Date()) / (1000 * 60 * 60 * 1000 * 24));
-      const velocity = (sprint.completedPoints / 11).toFixed(1);
-      const successProbability = Math.max(0, Math.min(100, 100 - (remainingPoints / (daysRemaining * velocity)) * 20));
-      
-      document.getElementById('burndown-container').innerHTML = `
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div class="px-4 py-3 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-semibold text-gray-900">${t('dashboard.burndownTitle')}</h3>
-              <div class="flex items-center space-x-3 text-xs">
-                <div class="hidden sm:flex items-center space-x-4">
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-0.5 bg-green-600" style="border-top: 1px dashed #00875A;"></div>
-                    <span class="text-gray-500">${t('dashboard.ideal')}</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <div class="w-3 h-0.5 bg-blue-600"></div>
-                    <span class="text-gray-500">${t('dashboard.reality')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="p-4">
-            <div class="bg-gray-50 rounded-lg h-32 flex items-center justify-center mb-4">
-              <div class="text-center">
-                <div class="text-2xl mb-2">📉</div>
-                <p class="text-gray-500 text-xs">${t('dashboard.despairChart')}</p>
-                <p class="text-xs text-gray-400 mt-1">
-                  ${successProbability < 50 ? t('dashboard.trendWorsening') : t('dashboard.trendImproving')}
-                </p>
-              </div>
-            </div>
-            
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-gray-500">${t('dashboard.successProbability')}</span>
-                <span class="font-semibold ${successProbability < 30 ? 'text-red-600' : successProbability < 70 ? 'text-amber-600' : 'text-emerald-600'}">
-                  ${Math.round(successProbability)}%
-                </span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="h-2 rounded-full ${successProbability < 30 ? 'bg-red-500' : successProbability < 70 ? 'bg-amber-500' : 'bg-emerald-500'}" 
-                     style="width: ${successProbability}%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    
     // Drag and Drop functionality
     let draggedStoryId = null;
     
@@ -972,6 +1224,13 @@ import Header from '../components/Header.astro';
       
       // Re-render dashboard with new data
       renderDashboard();
+    });
+    
+    // Handle window resize for chart responsiveness
+    window.addEventListener('resize', () => {
+      setTimeout(() => {
+        renderBurndownChart();
+      }, 100);
     });
     
     // Initialize dashboard
