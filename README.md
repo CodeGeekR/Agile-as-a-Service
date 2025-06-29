@@ -6,7 +6,7 @@
 
 **Transform your existence with the framework that's revolutionizing inefficiency**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_AaaS-0052CC?style=for-the-badge)](https://agile-as-a-service.netlify.app)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_AaaS-0052CC?style=for-the-badge)](https://prismatic-froyo-fd93d1.netlify.app/)
 [![Built with Astro](https://img.shields.io/badge/Built_with-Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build)
 [![Powered by Bolt](https://img.shields.io/badge/Powered_by-Bolt-000000?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDEwVjNMNDE0aDd2N2wtOS0xMWgtN3oiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=)](https://bolt.new)
 
@@ -139,7 +139,7 @@ npm run dev
 ### 🌐 Access the Application
 
 - **Local Development**: http://localhost:4321
-- **Live Demo**: https://agile-as-a-service.netlify.app
+- **Live Demo**: https://prismatic-froyo-fd93d1.netlify.app/
 
 ### 🎮 Demo Credentials
 
@@ -393,7 +393,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 🚀 Built by **samuraidev**
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-samuraidev-0052CC?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDZINmEyIDIgMCAwMC0yIDJ2MTBhMiAyIDAgMDAyIDJoMTBhMiAyIDAgMDAyLTJWMTBhMiAyIDAgMDAtMi0yaDRNMTQgNGg2bTAgMHY2bTAtNkwxMCAxNCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+)](https://pythonweb.is-a.dev/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-pythonweb.is--a.dev-0052CC?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDZINmEyIDIgMCAwMC0yIDJ2MTBhMiAyIDAgMDAyIDJoMTBhMiAyIDAgMDAyLTJWMTBhMiAyIDAgMDAtMi0yaDRNMTQgNGg2bTAgMHY2bTAtNkwxMCAxNCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+)](https://pythonweb.is-a.dev/)
 [![GitHub](https://img.shields.io/badge/GitHub-samuraidev-181717?style=for-the-badge&logo=github)](https://github.com/samuraidev)
 
 **Senior Frontend Developer** specializing in high-performance web applications
@@ -418,6 +418,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Micro-interactions**: Smooth animations enhancing user experience
 - **Progressive Enhancement**: Works without JavaScript
 - **Satirical Accuracy**: Authentic corporate bureaucracy simulation
+
+### 🌟 About the Developer
+
+**samuraidev** is a passionate frontend developer with expertise in modern web technologies and performance optimization. This project showcases the ability to deliver production-quality applications under extreme time constraints while maintaining technical excellence and creative vision.
+
+**Portfolio**: [pythonweb.is-a.dev](https://pythonweb.is-a.dev/)
 
 ---
 
