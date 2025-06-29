@@ -1,0 +1,588 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Sprints - Gestión de Sprints | AaaS">
+  <Header />
+  
+  <main class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
+      <div class="px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center space-x-3">
+              <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h1 class="text-2xl font-bold text-gray-900" data-i18n="sprints.title">
+                  Gestión de Sprints
+                </h1>
+                <p class="text-sm text-gray-500 mt-1" data-i18n="sprints.subtitle">
+                  Administra tus sprints de existencia optimizada
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3">
+            <button id="new-sprint-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span data-i18n="sprints.newSprint">Nuevo Sprint</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Sprint Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="sprint-stats">
+        <!-- Stats will be populated by JavaScript -->
+      </div>
+
+      <!-- Active Sprint Section -->
+      <div class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4" data-i18n="sprints.activeSprint">Sprint Activo</h2>
+        <div id="active-sprint-card" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <!-- Active sprint will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Sprint History -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900" data-i18n="sprints.history">Historial de Sprints</h2>
+          <div class="flex items-center space-x-2">
+            <select id="status-filter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="all" data-i18n="sprints.allStatuses">Todos los estados</option>
+              <option value="ACTIVE" data-i18n="sprints.active">Activo</option>
+              <option value="COMPLETED" data-i18n="sprints.completed">Completado</option>
+              <option value="CANCELLED" data-i18n="sprints.cancelled">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div id="sprints-list" class="space-y-4">
+          <!-- Sprint list will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals Container -->
+  <div id="modals-container"></div>
+</Layout>
+
+<script>
+  import('../i18n/index.js').then(i18nModule => {
+    const { t, getLocale, forceUpdatePageContent } = i18nModule;
+    
+    // Check authentication
+    const token = localStorage.getItem('aaas-auth-token');
+    const userData = localStorage.getItem('aaas-user');
+    
+    if (!token || !userData) {
+      window.location.href = '/';
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    let appData = JSON.parse(localStorage.getItem('aaas-data') || '{}');
+    
+    // Initialize sprints data if not exists
+    if (!appData.sprints) {
+      const currentLocale = getLocale();
+      appData.sprints = [
+        {
+          id: 1,
+          name: currentLocale === 'en' ? "Basic Survival Sprint" : "Sprint de Supervivencia Básica",
+          goal: currentLocale === 'en' ? "Maintain operational existence with minimum human functionality KPIs" : "Mantener la existencia operativa con KPIs mínimos de funcionalidad humana",
+          startDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "ACTIVE",
+          totalPoints: 31,
+          completedPoints: 7,
+          userId: user.id
+        },
+        {
+          id: 2,
+          name: currentLocale === 'en' ? "Social Integration Sprint" : "Sprint de Integración Social",
+          goal: currentLocale === 'en' ? "Optimize interpersonal relationships through Agile methodologies" : "Optimizar relaciones interpersonales mediante metodologías Agile",
+          startDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "COMPLETED",
+          totalPoints: 55,
+          completedPoints: 48,
+          userId: user.id
+        },
+        {
+          id: 3,
+          name: currentLocale === 'en' ? "Domestic Excellence Sprint" : "Sprint de Excelencia Doméstica",
+          goal: currentLocale === 'en' ? "Transform home into a productive environment using Scrum principles" : "Transformar el hogar en un entorno productivo usando principios Scrum",
+          startDate: new Date(Date.now() - 39 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "CANCELLED",
+          totalPoints: 89,
+          completedPoints: 12,
+          userId: user.id
+        }
+      ];
+      localStorage.setItem('aaas-data', JSON.stringify(appData));
+    }
+    
+    function renderSprintStats() {
+      const sprints = appData.sprints || [];
+      const activeSprints = sprints.filter(s => s.status === 'ACTIVE').length;
+      const completedSprints = sprints.filter(s => s.status === 'COMPLETED').length;
+      const totalPoints = sprints.reduce((sum, s) => sum + s.totalPoints, 0);
+      const completedPoints = sprints.reduce((sum, s) => sum + s.completedPoints, 0);
+      const velocity = completedPoints > 0 ? (completedPoints / sprints.length).toFixed(1) : '0.0';
+      
+      document.getElementById('sprint-stats').innerHTML = `
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-purple-600">${activeSprints}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="sprints.activeCount">Sprints Activos</div>
+            </div>
+            <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-emerald-600">${completedSprints}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="sprints.completedCount">Completados</div>
+            </div>
+            <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-blue-600">${completedPoints}/${totalPoints}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="sprints.totalPoints">Puntos Totales</div>
+            </div>
+            <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-amber-600">${velocity}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="sprints.velocity">Velocity Promedio</div>
+            </div>
+            <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderActiveSprint() {
+      const activeSprint = appData.sprints?.find(s => s.status === 'ACTIVE');
+      
+      if (!activeSprint) {
+        document.getElementById('active-sprint-card').innerHTML = `
+          <div class="p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2" data-i18n="sprints.noActiveSprint">No hay sprint activo</h3>
+            <p class="text-gray-500 mb-4" data-i18n="sprints.createFirstSprint">Crea tu primer sprint para comenzar a optimizar tu existencia</p>
+            <button onclick="showNewSprintModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <span data-i18n="sprints.createSprint">Crear Sprint</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+      
+      const progress = Math.round((activeSprint.completedPoints / activeSprint.totalPoints) * 100);
+      const daysRemaining = Math.ceil((new Date(activeSprint.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+      const daysTotal = Math.ceil((new Date(activeSprint.endDate) - new Date(activeSprint.startDate)) / (1000 * 60 * 60 * 24));
+      const daysElapsed = daysTotal - daysRemaining;
+      
+      document.getElementById('active-sprint-card').innerHTML = `
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex-1">
+              <div class="flex items-center space-x-3 mb-2">
+                <h3 class="text-xl font-semibold text-gray-900">${activeSprint.name}</h3>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <div class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></div>
+                  <span data-i18n="sprints.active">Activo</span>
+                </span>
+              </div>
+              <p class="text-gray-600 mb-4">${activeSprint.goal}</p>
+              
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">${progress}%</div>
+                  <div class="text-xs text-gray-500" data-i18n="sprints.progress">Progreso</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">${daysRemaining}</div>
+                  <div class="text-xs text-gray-500" data-i18n="sprints.daysLeft">Días restantes</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">${activeSprint.completedPoints}</div>
+                  <div class="text-xs text-gray-500" data-i18n="sprints.pointsCompleted">Puntos completados</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">${activeSprint.totalPoints}</div>
+                  <div class="text-xs text-gray-500" data-i18n="sprints.totalPoints">Puntos totales</div>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <div class="flex items-center justify-between text-sm mb-2">
+                  <span class="text-gray-600" data-i18n="sprints.sprintProgress">Progreso del Sprint</span>
+                  <span class="font-medium">${activeSprint.completedPoints}/${activeSprint.totalPoints} puntos</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 ml-6">
+              <button onclick="window.location.href='/dashboard'" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span data-i18n="sprints.viewDashboard">Ver Dashboard</span>
+              </button>
+              <button onclick="completeSprint(${activeSprint.id})" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span data-i18n="sprints.completeSprint">Completar Sprint</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderSprintsList() {
+      const sprints = appData.sprints || [];
+      const filter = document.getElementById('status-filter')?.value || 'all';
+      const filteredSprints = filter === 'all' ? sprints : sprints.filter(s => s.status === filter);
+      
+      if (filteredSprints.length === 0) {
+        document.getElementById('sprints-list').innerHTML = `
+          <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2" data-i18n="sprints.noSprints">No hay sprints</h3>
+            <p class="text-gray-500" data-i18n="sprints.noSprintsDesc">No se encontraron sprints con el filtro seleccionado</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const sprintCards = filteredSprints.map(sprint => {
+        const progress = Math.round((sprint.completedPoints / sprint.totalPoints) * 100);
+        const statusColors = {
+          'ACTIVE': 'bg-green-100 text-green-800',
+          'COMPLETED': 'bg-blue-100 text-blue-800',
+          'CANCELLED': 'bg-red-100 text-red-800'
+        };
+        
+        const statusIcons = {
+          'ACTIVE': '🔥',
+          'COMPLETED': '✅',
+          'CANCELLED': '❌'
+        };
+        
+        return `
+          <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-2">
+                  <h3 class="text-lg font-semibold text-gray-900">${sprint.name}</h3>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[sprint.status]}">
+                    ${statusIcons[sprint.status]} ${t('sprints.' + sprint.status.toLowerCase())}
+                  </span>
+                </div>
+                <p class="text-gray-600 mb-4">${sprint.goal}</p>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${progress}%</div>
+                    <div class="text-xs text-gray-500" data-i18n="sprints.progress">Progreso</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${sprint.completedPoints}/${sprint.totalPoints}</div>
+                    <div class="text-xs text-gray-500" data-i18n="sprints.points">Puntos</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${Math.ceil((new Date(sprint.endDate) - new Date(sprint.startDate)) / (1000 * 60 * 60 * 24))}</div>
+                    <div class="text-xs text-gray-500" data-i18n="sprints.duration">Días</div>
+                  </div>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-purple-600 h-2 rounded-full" style="width: ${progress}%"></div>
+                </div>
+              </div>
+              
+              <div class="flex items-center space-x-2 ml-6">
+                <button onclick="viewSprintDetails(${sprint.id})" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span data-i18n="sprints.viewDetails">Ver Detalles</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('sprints-list').innerHTML = sprintCards;
+    }
+    
+    // Event handlers
+    window.showNewSprintModal = function() {
+      document.getElementById('modals-container').innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold" data-i18n="sprints.newSprint">Nuevo Sprint</h2>
+                <button onclick="closeModal()" class="text-white hover:text-gray-300 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <form onsubmit="createNewSprint(event)" class="p-6 space-y-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="sprints.sprintName">Nombre del Sprint</label>
+                <input type="text" id="sprint-name" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Sprint de Optimización Existencial" required />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="sprints.sprintGoal">Objetivo del Sprint</label>
+                <textarea id="sprint-goal" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none" rows="3" placeholder="Describir el objetivo principal del sprint..." required></textarea>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="sprints.startDate">Fecha de Inicio</label>
+                  <input type="date" id="start-date" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" required />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="sprints.endDate">Fecha de Fin</label>
+                  <input type="date" id="end-date" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" required />
+                </div>
+              </div>
+              
+              <div class="flex space-x-3 pt-4">
+                <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors">
+                  <span data-i18n="common.cancel">Cancelar</span>
+                </button>
+                <button type="submit" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors">
+                  <span data-i18n="sprints.createSprint">Crear Sprint</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+      
+      // Set default dates
+      const today = new Date().toISOString().split('T')[0];
+      const twoWeeksLater = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      document.getElementById('start-date').value = today;
+      document.getElementById('end-date').value = twoWeeksLater;
+    };
+    
+    window.createNewSprint = function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('sprint-name').value;
+      const goal = document.getElementById('sprint-goal').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      
+      // Complete current active sprint if exists
+      const currentActive = appData.sprints?.find(s => s.status === 'ACTIVE');
+      if (currentActive) {
+        currentActive.status = 'COMPLETED';
+      }
+      
+      const newSprint = {
+        id: Date.now(),
+        name: name,
+        goal: goal,
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        status: 'ACTIVE',
+        totalPoints: 0,
+        completedPoints: 0,
+        userId: user.id
+      };
+      
+      if (!appData.sprints) appData.sprints = [];
+      appData.sprints.push(newSprint);
+      
+      // Update active sprint in main data
+      appData.activeSprint = newSprint;
+      
+      localStorage.setItem('aaas-data', JSON.stringify(appData));
+      closeModal();
+      renderPage();
+    };
+    
+    window.completeSprint = function(sprintId) {
+      if (confirm(t('sprints.confirmComplete'))) {
+        const sprint = appData.sprints?.find(s => s.id === sprintId);
+        if (sprint) {
+          sprint.status = 'COMPLETED';
+          localStorage.setItem('aaas-data', JSON.stringify(appData));
+          renderPage();
+        }
+      }
+    };
+    
+    window.viewSprintDetails = function(sprintId) {
+      const sprint = appData.sprints?.find(s => s.id === sprintId);
+      if (!sprint) return;
+      
+      const progress = Math.round((sprint.completedPoints / sprint.totalPoints) * 100);
+      const duration = Math.ceil((new Date(sprint.endDate) - new Date(sprint.startDate)) / (1000 * 60 * 60 * 24));
+      
+      document.getElementById('modals-container').innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-xl font-semibold">${sprint.name}</h2>
+                  <p class="text-purple-100 text-sm mt-1">${sprint.status}</p>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:text-gray-300 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="p-6 space-y-6">
+              <div>
+                <h3 class="font-semibold text-gray-900 mb-2" data-i18n="sprints.objective">Objetivo</h3>
+                <p class="text-gray-600">${sprint.goal}</p>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <h4 class="font-medium text-gray-900 mb-2" data-i18n="sprints.startDate">Fecha de Inicio</h4>
+                  <p class="text-gray-600">${new Date(sprint.startDate).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900 mb-2" data-i18n="sprints.endDate">Fecha de Fin</h4>
+                  <p class="text-gray-600">${new Date(sprint.endDate).toLocaleDateString()}</p>
+                </div>
+              </div>
+              
+              <div>
+                <h4 class="font-medium text-gray-900 mb-4" data-i18n="sprints.metrics">Métricas</h4>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600">${progress}%</div>
+                    <div class="text-sm text-gray-500" data-i18n="sprints.progress">Progreso</div>
+                  </div>
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">${sprint.completedPoints}/${sprint.totalPoints}</div>
+                    <div class="text-sm text-gray-500" data-i18n="sprints.points">Puntos</div>
+                  </div>
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-emerald-600">${duration}</div>
+                    <div class="text-sm text-gray-500" data-i18n="sprints.days">Días</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex items-center justify-between text-sm mb-2">
+                  <span class="text-gray-600" data-i18n="sprints.sprintProgress">Progreso del Sprint</span>
+                  <span class="font-medium">${sprint.completedPoints}/${sprint.totalPoints} puntos</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                  <div class="bg-purple-600 h-3 rounded-full" style="width: ${progress}%"></div>
+                </div>
+              </div>
+              
+              <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">
+                  <span data-i18n="common.close">Cerrar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+    
+    window.closeModal = function() {
+      document.getElementById('modals-container').innerHTML = '';
+    };
+    
+    function renderPage() {
+      renderSprintStats();
+      renderActiveSprint();
+      renderSprintsList();
+      forceUpdatePageContent();
+    }
+    
+    // Event listeners
+    document.getElementById('new-sprint-btn').addEventListener('click', showNewSprintModal);
+    document.getElementById('status-filter').addEventListener('change', renderSprintsList);
+    
+    // Listen for language changes
+    window.addEventListener('localeChanged', renderPage);
+    
+    // Initial render
+    renderPage();
+  });
+</script>
+</Layout>

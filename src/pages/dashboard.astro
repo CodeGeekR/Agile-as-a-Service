@@ -882,6 +882,55 @@ import Header from '../components/Header.astro';
       selectPoints(3);
     };
     
+    // Sprint Planning Modal
+    window.showSprintPlanningModal = function() {
+      import('../components/SprintPlanningModal.jsx').then(module => {
+        const SprintPlanningModal = module.default;
+        
+        // Create a simple implementation for now
+        document.getElementById('modals-container').innerHTML = `
+          <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+              <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h2 class="text-2xl font-semibold">Sprint Planning</h2>
+                    <p class="opacity-90 mt-1">Planifica tu próximo sprint de existencia optimizada</p>
+                  </div>
+                  <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors p-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="p-8 text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Sprint Planning Avanzado</h3>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                  El Sprint Planning completo está disponible en la sección dedicada de Sprints. 
+                  Allí podrás crear nuevos sprints, seleccionar historias del backlog y establecer objetivos.
+                </p>
+                <div class="flex space-x-3 justify-center">
+                  <button onclick="closeModal()" class="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors">
+                    Cerrar
+                  </button>
+                  <button onclick="window.location.href='/sprints'" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors">
+                    Ir a Sprints
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    };
+    
     window.selectPoints = function(points) {
       document.getElementById('story-points').value = points;
       document.querySelectorAll('.story-points-btn').forEach(btn => {
@@ -925,10 +974,7 @@ import Header from '../components/Header.astro';
     };
     
     // Event listeners
-    document.getElementById('sprint-planning-btn').addEventListener('click', () => {
-      alert(t('dashboard.sprintPlanningMessage'));
-    });
-    
+    document.getElementById('sprint-planning-btn').addEventListener('click', showSprintPlanningModal);
     document.getElementById('new-story-btn').addEventListener('click', showNewStoryModal);
     document.getElementById('mobile-new-story').addEventListener('click', showNewStoryModal);
     
@@ -1027,3 +1073,4 @@ import Header from '../components/Header.astro';
     }
   }
 </style>
+</Layout>

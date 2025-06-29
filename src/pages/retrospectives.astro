@@ -1,0 +1,697 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="Retrospectives - Análisis de Sprints | AaaS">
+  <Header />
+  
+  <main class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
+      <div class="px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center space-x-3">
+              <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h1 class="text-2xl font-bold text-gray-900" data-i18n="retrospectives.title">
+                  Retrospectives
+                </h1>
+                <p class="text-sm text-gray-500 mt-1" data-i18n="retrospectives.subtitle">
+                  Analiza y mejora tus sprints de existencia
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3">
+            <button id="new-retrospective-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span data-i18n="retrospectives.newRetrospective">Nueva Retrospective</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Retrospective Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="retro-stats">
+        <!-- Stats will be populated by JavaScript -->
+      </div>
+
+      <!-- Current Retrospective -->
+      <div class="mb-8" id="current-retrospective-section">
+        <!-- Current retrospective will be populated by JavaScript -->
+      </div>
+
+      <!-- Retrospectives History -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900" data-i18n="retrospectives.history">Historial de Retrospectives</h2>
+          <div class="flex items-center space-x-2">
+            <select id="sprint-filter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+              <option value="all" data-i18n="retrospectives.allSprints">Todos los sprints</option>
+            </select>
+          </div>
+        </div>
+        <div id="retrospectives-list" class="space-y-4">
+          <!-- Retrospectives list will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals Container -->
+  <div id="modals-container"></div>
+</Layout>
+
+<script>
+  import('../i18n/index.js').then(i18nModule => {
+    const { t, getLocale, forceUpdatePageContent } = i18nModule;
+    
+    // Check authentication
+    const token = localStorage.getItem('aaas-auth-token');
+    const userData = localStorage.getItem('aaas-user');
+    
+    if (!token || !userData) {
+      window.location.href = '/';
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    let appData = JSON.parse(localStorage.getItem('aaas-data') || '{}');
+    
+    // Initialize retrospectives data if not exists
+    if (!appData.retrospectives) {
+      const currentLocale = getLocale();
+      appData.retrospectives = [
+        {
+          id: 1,
+          sprintId: 2,
+          sprintName: currentLocale === 'en' ? "Social Integration Sprint" : "Sprint de Integración Social",
+          date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "COMPLETED",
+          whatWentWell: currentLocale === 'en' ? [
+            "Successfully implemented daily stand-ups with myself",
+            "Improved communication with neighbors by 23%",
+            "Completed all social media optimization tasks"
+          ] : [
+            "Implementé exitosamente daily stand-ups conmigo mismo",
+            "Mejoré la comunicación con vecinos en un 23%",
+            "Completé todas las tareas de optimización de redes sociales"
+          ],
+          whatWentWrong: currentLocale === 'en' ? [
+            "Overestimated my social battery capacity",
+            "Too many dependencies on external stakeholders",
+            "Burndown chart showed concerning anxiety spikes"
+          ] : [
+            "Sobreestimé mi capacidad de batería social",
+            "Demasiadas dependencias de stakeholders externos",
+            "El burndown chart mostró picos de ansiedad preocupantes"
+          ],
+          actionItems: currentLocale === 'en' ? [
+            "Implement better WIP limits for social interactions",
+            "Create buffer time for introvert recovery sprints",
+            "Establish clearer definition of done for conversations"
+          ] : [
+            "Implementar mejores límites WIP para interacciones sociales",
+            "Crear tiempo buffer para sprints de recuperación introvertida",
+            "Establecer definición de done más clara para conversaciones"
+          ],
+          mood: "GOOD",
+          velocity: 8.7,
+          userId: user.id
+        }
+      ];
+      localStorage.setItem('aaas-data', JSON.stringify(appData));
+    }
+    
+    function renderRetroStats() {
+      const retrospectives = appData.retrospectives || [];
+      const totalRetros = retrospectives.length;
+      const avgVelocity = retrospectives.length > 0 ? 
+        (retrospectives.reduce((sum, r) => sum + (r.velocity || 0), 0) / retrospectives.length).toFixed(1) : '0.0';
+      const improvementTrend = retrospectives.length >= 2 ? 
+        (retrospectives[retrospectives.length - 1].velocity > retrospectives[retrospectives.length - 2].velocity ? 'UP' : 'DOWN') : 'STABLE';
+      
+      document.getElementById('retro-stats').innerHTML = `
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-emerald-600">${totalRetros}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="retrospectives.totalRetros">Retrospectives Realizadas</div>
+            </div>
+            <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-blue-600">${avgVelocity}</div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="retrospectives.avgVelocity">Velocity Promedio</div>
+            </div>
+            <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold ${improvementTrend === 'UP' ? 'text-emerald-600' : improvementTrend === 'DOWN' ? 'text-red-600' : 'text-amber-600'}">
+                ${improvementTrend === 'UP' ? '📈' : improvementTrend === 'DOWN' ? '📉' : '➡️'}
+              </div>
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wide" data-i18n="retrospectives.trend">Tendencia</div>
+            </div>
+            <div class="w-8 h-8 ${improvementTrend === 'UP' ? 'bg-emerald-50' : improvementTrend === 'DOWN' ? 'bg-red-50' : 'bg-amber-50'} rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 ${improvementTrend === 'UP' ? 'text-emerald-600' : improvementTrend === 'DOWN' ? 'text-red-600' : 'text-amber-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderCurrentRetrospective() {
+      const activeSprint = appData.activeSprint;
+      const hasActiveRetro = appData.retrospectives?.some(r => r.sprintId === activeSprint?.id && r.status === 'IN_PROGRESS');
+      
+      if (!activeSprint || hasActiveRetro) {
+        document.getElementById('current-retrospective-section').innerHTML = '';
+        return;
+      }
+      
+      document.getElementById('current-retrospective-section').innerHTML = `
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4" data-i18n="retrospectives.currentSprint">Sprint Actual</h2>
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">${activeSprint.name}</h3>
+                <p class="text-gray-600 mb-4">${activeSprint.goal}</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${Math.round((activeSprint.completedPoints / activeSprint.totalPoints) * 100)}%</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.progress">Progreso</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${activeSprint.completedPoints}/${activeSprint.totalPoints}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.points">Puntos</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${Math.ceil((new Date(activeSprint.endDate) - new Date()) / (1000 * 60 * 60 * 24))}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.daysLeft">Días restantes</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-gray-900">${(activeSprint.completedPoints / 11).toFixed(1)}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.velocity">Velocity</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="ml-6">
+                <button onclick="startRetrospective(${activeSprint.id})" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span data-i18n="retrospectives.startRetrospective">Iniciar Retrospective</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderRetrospectivesList() {
+      const retrospectives = appData.retrospectives || [];
+      
+      if (retrospectives.length === 0) {
+        document.getElementById('retrospectives-list').innerHTML = `
+          <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2" data-i18n="retrospectives.noRetros">No hay retrospectives</h3>
+            <p class="text-gray-500" data-i18n="retrospectives.noRetrosDesc">Completa tu primer sprint para crear una retrospective</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const retroCards = retrospectives.map(retro => {
+        const moodColors = {
+          'EXCELLENT': 'bg-emerald-100 text-emerald-800',
+          'GOOD': 'bg-blue-100 text-blue-800',
+          'NEUTRAL': 'bg-amber-100 text-amber-800',
+          'BAD': 'bg-red-100 text-red-800'
+        };
+        
+        const moodIcons = {
+          'EXCELLENT': '😄',
+          'GOOD': '😊',
+          'NEUTRAL': '😐',
+          'BAD': '😞'
+        };
+        
+        return `
+          <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-2">
+                  <h3 class="text-lg font-semibold text-gray-900">${retro.sprintName}</h3>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${moodColors[retro.mood]}">
+                    ${moodIcons[retro.mood]} ${t('retrospectives.mood.' + retro.mood.toLowerCase())}
+                  </span>
+                </div>
+                <p class="text-sm text-gray-500 mb-4">${new Date(retro.date).toLocaleDateString()}</p>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-emerald-600">${retro.whatWentWell?.length || 0}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.positives">Positivos</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-red-600">${retro.whatWentWrong?.length || 0}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.improvements">Mejoras</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-blue-600">${retro.velocity || 0}</div>
+                    <div class="text-xs text-gray-500" data-i18n="retrospectives.velocity">Velocity</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center space-x-2 ml-6">
+                <button onclick="viewRetrospective(${retro.id})" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span data-i18n="retrospectives.viewDetails">Ver Detalles</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('retrospectives-list').innerHTML = retroCards;
+    }
+    
+    // Event handlers
+    window.startRetrospective = function(sprintId) {
+      const sprint = appData.sprints?.find(s => s.id === sprintId) || appData.activeSprint;
+      if (!sprint) return;
+      
+      document.getElementById('modals-container').innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-xl font-semibold" data-i18n="retrospectives.newRetrospective">Nueva Retrospective</h2>
+                  <p class="text-emerald-100 text-sm mt-1">${sprint.name}</p>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:text-gray-300 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <form onsubmit="createRetrospective(event, ${sprintId})" class="p-6 space-y-8">
+              <!-- What Went Well -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.whatWentWell">¿Qué salió bien?</span>
+                </h3>
+                <div id="went-well-items" class="space-y-2 mb-3">
+                  <div class="flex items-center space-x-2">
+                    <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="Algo que funcionó bien en este sprint..." />
+                    <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" onclick="addWentWellItem()" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                  + Agregar otro punto positivo
+                </button>
+              </div>
+              
+              <!-- What Went Wrong -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.whatWentWrong">¿Qué se puede mejorar?</span>
+                </h3>
+                <div id="went-wrong-items" class="space-y-2 mb-3">
+                  <div class="flex items-center space-x-2">
+                    <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Algo que se puede mejorar..." />
+                    <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" onclick="addWentWrongItem()" class="text-red-600 hover:text-red-700 text-sm font-medium">
+                  + Agregar punto de mejora
+                </button>
+              </div>
+              
+              <!-- Action Items -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.actionItems">Acciones para el próximo sprint</span>
+                </h3>
+                <div id="action-items" class="space-y-2 mb-3">
+                  <div class="flex items-center space-x-2">
+                    <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Acción específica para implementar..." />
+                    <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" onclick="addActionItem()" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                  + Agregar acción
+                </button>
+              </div>
+              
+              <!-- Mood and Velocity -->
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="retrospectives.overallMood">Estado de ánimo general</label>
+                  <select id="mood-select" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required>
+                    <option value="EXCELLENT">😄 Excelente</option>
+                    <option value="GOOD" selected>😊 Bueno</option>
+                    <option value="NEUTRAL">😐 Neutral</option>
+                    <option value="BAD">😞 Malo</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3" data-i18n="retrospectives.sprintVelocity">Velocity del Sprint</label>
+                  <input type="number" id="velocity-input" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" min="0" max="10" step="0.1" value="${(sprint.completedPoints / 14).toFixed(1)}" required />
+                </div>
+              </div>
+              
+              <div class="flex space-x-3 pt-4">
+                <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors">
+                  <span data-i18n="common.cancel">Cancelar</span>
+                </button>
+                <button type="submit" class="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-colors">
+                  <span data-i18n="retrospectives.createRetrospective">Crear Retrospective</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    };
+    
+    window.addWentWellItem = function() {
+      const container = document.getElementById('went-well-items');
+      const newItem = document.createElement('div');
+      newItem.className = 'flex items-center space-x-2';
+      newItem.innerHTML = `
+        <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="Algo que funcionó bien en este sprint..." />
+        <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      `;
+      container.appendChild(newItem);
+    };
+    
+    window.addWentWrongItem = function() {
+      const container = document.getElementById('went-wrong-items');
+      const newItem = document.createElement('div');
+      newItem.className = 'flex items-center space-x-2';
+      newItem.innerHTML = `
+        <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Algo que se puede mejorar..." />
+        <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      `;
+      container.appendChild(newItem);
+    };
+    
+    window.addActionItem = function() {
+      const container = document.getElementById('action-items');
+      const newItem = document.createElement('div');
+      newItem.className = 'flex items-center space-x-2';
+      newItem.innerHTML = `
+        <input type="text" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Acción específica para implementar..." />
+        <button type="button" onclick="removeItem(this)" class="text-red-500 hover:text-red-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      `;
+      container.appendChild(newItem);
+    };
+    
+    window.removeItem = function(button) {
+      button.parentElement.remove();
+    };
+    
+    window.createRetrospective = function(e, sprintId) {
+      e.preventDefault();
+      
+      const sprint = appData.sprints?.find(s => s.id === sprintId) || appData.activeSprint;
+      
+      // Collect form data
+      const wentWellInputs = document.querySelectorAll('#went-well-items input');
+      const wentWrongInputs = document.querySelectorAll('#went-wrong-items input');
+      const actionInputs = document.querySelectorAll('#action-items input');
+      
+      const whatWentWell = Array.from(wentWellInputs).map(input => input.value).filter(value => value.trim());
+      const whatWentWrong = Array.from(wentWrongInputs).map(input => input.value).filter(value => value.trim());
+      const actionItems = Array.from(actionInputs).map(input => input.value).filter(value => value.trim());
+      
+      const mood = document.getElementById('mood-select').value;
+      const velocity = parseFloat(document.getElementById('velocity-input').value);
+      
+      const newRetrospective = {
+        id: Date.now(),
+        sprintId: sprintId,
+        sprintName: sprint.name,
+        date: new Date().toISOString(),
+        status: "COMPLETED",
+        whatWentWell: whatWentWell,
+        whatWentWrong: whatWentWrong,
+        actionItems: actionItems,
+        mood: mood,
+        velocity: velocity,
+        userId: user.id
+      };
+      
+      if (!appData.retrospectives) appData.retrospectives = [];
+      appData.retrospectives.push(newRetrospective);
+      
+      localStorage.setItem('aaas-data', JSON.stringify(appData));
+      closeModal();
+      renderPage();
+    };
+    
+    window.viewRetrospective = function(retroId) {
+      const retro = appData.retrospectives?.find(r => r.id === retroId);
+      if (!retro) return;
+      
+      const moodColors = {
+        'EXCELLENT': 'bg-emerald-100 text-emerald-800',
+        'GOOD': 'bg-blue-100 text-blue-800',
+        'NEUTRAL': 'bg-amber-100 text-amber-800',
+        'BAD': 'bg-red-100 text-red-800'
+      };
+      
+      const moodIcons = {
+        'EXCELLENT': '😄',
+        'GOOD': '😊',
+        'NEUTRAL': '😐',
+        'BAD': '😞'
+      };
+      
+      document.getElementById('modals-container').innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-xl font-semibold">${retro.sprintName}</h2>
+                  <p class="text-emerald-100 text-sm mt-1">${new Date(retro.date).toLocaleDateString()}</p>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:text-gray-300 transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="p-6 space-y-8">
+              <!-- Mood and Velocity -->
+              <div class="grid grid-cols-2 gap-6">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                  <div class="text-3xl mb-2">${moodIcons[retro.mood]}</div>
+                  <div class="text-sm font-medium text-gray-900" data-i18n="retrospectives.mood">Estado de Ánimo</div>
+                  <div class="text-xs text-gray-500">${t('retrospectives.mood.' + retro.mood.toLowerCase())}</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                  <div class="text-3xl font-bold text-blue-600 mb-2">${retro.velocity}</div>
+                  <div class="text-sm font-medium text-gray-900" data-i18n="retrospectives.velocity">Velocity</div>
+                  <div class="text-xs text-gray-500">Puntos por día</div>
+                </div>
+              </div>
+              
+              <!-- What Went Well -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.whatWentWell">¿Qué salió bien?</span>
+                </h3>
+                <div class="space-y-2">
+                  ${retro.whatWentWell?.map(item => `
+                    <div class="flex items-center space-x-3 p-3 bg-emerald-50 rounded-lg">
+                      <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span class="text-emerald-800">${item}</span>
+                    </div>
+                  `).join('') || '<p class="text-gray-500 italic">No se registraron puntos positivos</p>'}
+                </div>
+              </div>
+              
+              <!-- What Went Wrong -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.whatWentWrong">¿Qué se puede mejorar?</span>
+                </h3>
+                <div class="space-y-2">
+                  ${retro.whatWentWrong?.map(item => `
+                    <div class="flex items-center space-x-3 p-3 bg-red-50 rounded-lg">
+                      <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span class="text-red-800">${item}</span>
+                    </div>
+                  `).join('') || '<p class="text-gray-500 italic">No se registraron puntos de mejora</p>'}
+                </div>
+              </div>
+              
+              <!-- Action Items -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </span>
+                  <span data-i18n="retrospectives.actionItems">Acciones para el próximo sprint</span>
+                </h3>
+                <div class="space-y-2">
+                  ${retro.actionItems?.map(item => `
+                    <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                      <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      <span class="text-blue-800">${item}</span>
+                    </div>
+                  `).join('') || '<p class="text-gray-500 italic">No se definieron acciones específicas</p>'}
+                </div>
+              </div>
+              
+              <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">
+                  <span data-i18n="common.close">Cerrar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+    
+    window.closeModal = function() {
+      document.getElementById('modals-container').innerHTML = '';
+    };
+    
+    function renderPage() {
+      renderRetroStats();
+      renderCurrentRetrospective();
+      renderRetrospectivesList();
+      forceUpdatePageContent();
+    }
+    
+    // Event listeners
+    document.getElementById('new-retrospective-btn').addEventListener('click', () => {
+      const activeSprint = appData.activeSprint;
+      if (activeSprint) {
+        startRetrospective(activeSprint.id);
+      } else {
+        alert('No hay sprint activo para crear una retrospective');
+      }
+    });
+    
+    // Listen for language changes
+    window.addEventListener('localeChanged', renderPage);
+    
+    // Initial render
+    renderPage();
+  });
+</script>
+</Layout>
