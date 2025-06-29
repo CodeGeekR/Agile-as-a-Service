@@ -548,12 +548,12 @@ import Header from '../components/Header.astro';
       renderBurndownChart();
       
       // Update recent activity
-      currentLocale = getLocale();
-      const coffeeTask = currentLocale === 'en' ? 'Make coffee' : 'Hacer café';
-      const bedTask = currentLocale === 'en' ? 'Make the bed' : 'Hacer la cama';
-      const motivationIssue = currentLocale === 'en' ? 'Lack of motivation affecting sprint velocity' : 'Falta de motivación afectando el velocity del sprint';
-      const waitingText = currentLocale === 'en' ? 'is waiting for external dependency resolution (buy coffee)' : 'está esperando resolución de dependencia externa (comprar café)';
-      const movedText = currentLocale === 'en' ? 'moved to Done' : 'movida a Done';
+      let currentLocaleForActivity = getLocale();
+      const coffeeTask = currentLocaleForActivity === 'en' ? 'Make coffee' : 'Hacer café';
+      const bedTask = currentLocaleForActivity === 'en' ? 'Make the bed' : 'Hacer la cama';
+      const motivationIssue = currentLocaleForActivity === 'en' ? 'Lack of motivation affecting sprint velocity' : 'Falta de motivación afectando el velocity del sprint';
+      const waitingText = currentLocaleForActivity === 'en' ? 'is waiting for external dependency resolution (buy coffee)' : 'está esperando resolución de dependencia externa (comprar café)';
+      const movedText = currentLocaleForActivity === 'en' ? 'moved to Done' : 'movida a Done';
       
       document.getElementById('recent-activity').innerHTML = `
         <div class="flex items-start space-x-3">
