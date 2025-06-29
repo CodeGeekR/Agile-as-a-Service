@@ -4,7 +4,7 @@ import LanguageSelector from '../components/LanguageSelector.jsx';
 ---
 
 <Layout title="AaaS - Agile as a Service | Optimiza tu Existencia">
-  <!-- Bolt Logo Flotante - Posición corregida -->
+  <!-- Bolt Logo Flotante - Posición ajustada -->
   <div class="fixed top-24 right-4 z-40 bolt-logo-container">
     <a 
       href="https://bolt.new/" 
@@ -55,8 +55,8 @@ import LanguageSelector from '../components/LanguageSelector.jsx';
           <a href="/dashboard" class="bg-white text-primary px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm">Dashboard</a>
         </div>
         
-        <!-- Language Selector - Z-index alto para estar sobre el logo -->
-        <div id="language-selector-container" class="relative z-50">
+        <!-- Language Selector - Posición ajustada para móviles -->
+        <div id="language-selector-container" class="relative z-50 mr-20 md:mr-0">
           <!-- Language selector will be rendered here -->
         </div>
       </div>
@@ -581,6 +581,11 @@ import LanguageSelector from '../components/LanguageSelector.jsx';
     .bolt-logo-container a {
       width: 3rem;
       height: 3rem;
+    }
+    
+    /* Ajuste específico para el selector de idioma en móviles */
+    #language-selector-container {
+      margin-right: 4rem !important; /* 64px = 4rem para dar espacio al logo */
     }
   }
 
