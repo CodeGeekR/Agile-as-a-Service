@@ -1,0 +1,72 @@
+---
+export interface Props {
+  title: string;
+  points: number;
+  epic: string;
+  status: 'TODO' | 'IN_PROGRESS' | 'DONE';
+  description?: string;
+  assignee?: string;
+  class?: string;
+}
+
+const { 
+  title, 
+  points, 
+  epic, 
+  status,
+  description,
+  assignee = 'JD',
+  class: className = '' 
+} = Astro.props;
+
+const statusColors = {
+  TODO: 'bg-gray-100 text-gray-600',
+  IN_PROGRESS: 'bg-blue-100 text-blue-600', 
+  DONE: 'bg-green-100 text-green-600'
+};
+
+const pointsColor = points <= 3 ? 'bg-green-200 text-green-800' : 
+                  points <= 5 ? 'bg-yellow-200 text-yellow-800' : 
+                  'bg-red-200 text-red-800';
+---
+
+<div class={`bg-bg-secondary p-4 rounded-lg shadow-sm border border-border-color hover:shadow-md transition-all duration-200 cursor-pointer group ${className}`}>
+  <div class="flex justify-between items-start mb-3">
+    <h3 class="text-sm font-medium text-text-primary line-clamp-2 group-hover:text-primary transition-colors">
+      {title}
+    </h3>
+    <span class={`inline-flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full ${pointsColor}`}>
+      {points}
+    </span>
+  </div>
+  
+  {description && (
+    <p class="text-xs text-text-secondary mb-3 line-clamp-2">
+      {description}
+    </p>
+  )}
+  
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <span class="text-xs text-text-secondary">{epic}</span>
+      <span class={`px-2 py-1 text-xs font-medium rounded ${statusColors[status]}`}>
+        {status.replace('_', ' ')}
+      </span>
+    </div>
+    
+    <div class="flex items-center space-x-1">
+      <div class="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+        <span class="text-white text-xs font-medium">{assignee}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

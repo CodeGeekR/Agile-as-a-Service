@@ -1,0 +1,241 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Onboarding - Bienvenido a AaaS">
+  <div id="onboarding-container"></div>
+</Layout>
+
+<script>
+  // Import i18n system
+  import('../i18n/index.js').then(i18nModule => {
+    const { t, getLocale } = i18nModule;
+    
+    // Check authentication
+    const token = localStorage.getItem('aaas-auth-token');
+    const userData = localStorage.getItem('aaas-user');
+    
+    if (!token || !userData) {
+      window.location.href = '/';
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    let currentStep = 0;
+    
+    const steps = [
+      {
+        titleKey: 'onboarding.welcome',
+        subtitleKey: 'onboarding.subtitle',
+        contentKey: 'onboarding.welcomeMessage',
+        contentParams: { name: user.name }
+      },
+      {
+        titleKey: 'onboarding.concepts',
+        subtitleKey: 'onboarding.conceptsSubtitle',
+        contentKey: 'onboarding.conceptsMessage'
+      },
+      {
+        titleKey: 'onboarding.firstEpic',
+        subtitleKey: 'onboarding.firstEpicSubtitle',
+        contentKey: 'onboarding.firstEpicMessage'
+      },
+      {
+        titleKey: 'onboarding.ready',
+        subtitleKey: 'onboarding.readySubtitle',
+        contentKey: 'onboarding.readyMessage'
+      }
+    ];
+    
+    function renderStep() {
+      const step = steps[currentStep];
+      const progress = ((currentStep + 1) / steps.length) * 100;
+      
+      document.getElementById('onboarding-container').innerHTML = `
+        <div class="fixed inset-0 bg-primary bg-opacity-95 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="bg-gray-200 h-2">
+              <div class="bg-primary h-2 transition-all duration-500" style="width: ${progress}%"></div>
+            </div>
+
+            <div class="p-8">
+              <div class="text-center mb-6">
+                <div class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-full text-sm font-medium">
+                  ${t('onboarding.step', { current: currentStep + 1, total: steps.length })}
+                </div>
+              </div>
+
+              <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-text-primary mb-2">${t(step.titleKey)}</h1>
+                <h2 class="text-xl text-primary font-medium mb-4">${t(step.subtitleKey)}</h2>
+                <p class="text-text-secondary text-lg leading-relaxed max-w-xl mx-auto">
+                  ${t(step.contentKey, step.contentParams || {})}
+                </p>
+              </div>
+
+              ${currentStep === 1 ? `
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                  <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span class="text-white font-bold">É</span>
+                    </div>
+                    <h3 class="font-semibold text-text-primary mb-2">${t('onboarding.epicsTitle')}</h3>
+                    <p class="text-sm text-text-secondary">${t('onboarding.epicsDescription')}</p>
+                  </div>
+                  <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span class="text-white font-bold">H</span>
+                    </div>
+                    <h3 class="font-semibold text-text-primary mb-2">${t('onboarding.storiesTitle')}</h3>
+                    <p class="text-sm text-text-secondary">${t('onboarding.storiesDescription')}</p>
+                  </div>
+                  <div class="bg-purple-50 p-4 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span class="text-white font-bold">S</span>
+                    </div>
+                    <h3 class="font-semibold text-text-primary mb-2">${t('onboarding.sprintsTitle')}</h3>
+                    <p class="text-sm text-text-secondary">${t('onboarding.sprintsDescription')}</p>
+                  </div>
+                </div>
+              ` : ''}
+
+              ${currentStep === 2 ? `
+                <div class="bg-gradient-to-r from-primary to-primary-dark text-white p-6 rounded-lg mb-8">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-xl font-semibold mb-2">Épica: Supervivencia Básica Q1 2025</h3>
+                      <p class="opacity-90">Epic fundamental para mantener la existencia operativa</p>
+                      <div class="flex items-center mt-3 space-x-4 text-sm">
+                        <span>📊 89 Story Points</span>
+                        <span>⏱️ Sprint Activo</span>
+                        <span>🎯 23% Completado</span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-3xl font-bold">89</div>
+                      <div class="text-sm opacity-75">Puntos Totales</div>
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+
+              <div class="flex justify-between items-center">
+                <button 
+                  id="prev-btn" 
+                  class="${currentStep === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-text-secondary hover:text-text-primary'} px-6 py-2 rounded font-medium transition-colors"
+                  ${currentStep === 0 ? 'disabled' : ''}
+                >
+                  ${t('onboarding.previous')}
+                </button>
+
+                <div class="flex space-x-2">
+                  ${steps.map((_, index) => `
+                    <div class="w-3 h-3 rounded-full ${index <= currentStep ? 'bg-primary' : 'bg-gray-300'}"></div>
+                  `).join('')}
+                </div>
+
+                <button id="next-btn" class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded font-medium transition-colors">
+                  ${currentStep === steps.length - 1 ? t('onboarding.goToDashboard') : t('onboarding.next')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add event listeners
+      const nextBtn = document.getElementById('next-btn');
+      const prevBtn = document.getElementById('prev-btn');
+      
+      nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          renderStep();
+        } else {
+          // Initialize user data and go to dashboard
+          initializeUserData();
+          window.location.href = '/dashboard';
+        }
+      });
+      
+      if (prevBtn && !prevBtn.disabled) {
+        prevBtn.addEventListener('click', () => {
+          if (currentStep > 0) {
+            currentStep--;
+            renderStep();
+          }
+        });
+      }
+    }
+    
+    function initializeUserData() {
+      // Initialize user's first epic and stories
+      const initialData = {
+        epics: [
+          {
+            id: 1,
+            title: "Supervivencia Básica Q1 2025",
+            description: "Epic fundamental para mantener la existencia operativa",
+            status: "ACTIVE",
+            userId: user.id
+          }
+        ],
+        stories: [
+          {
+            id: 1,
+            title: "Como ser humano, quiero beber café para no colapsar existencialmente",
+            description: "Bloqueador crítico: gestión de dependencia de cafeína. Requiere análisis de stakeholders (barista), research de mercado de cafeterías locales y retrospectiva post-cafeína para optimizar el proceso.",
+            status: "TODO",
+            points: 8,
+            epicId: 1,
+            sprintId: 1,
+            assignee: user.name.split(' ').map(n => n[0]).join(''),
+            priority: "CRITICAL",
+            tags: ["blocker", "dependency"]
+          },
+          {
+            id: 2,
+            title: "Como miembro funcional de la sociedad, quiero ducharme para ser socialmente aceptable",
+            description: "Historia crítica para mantener estándares de higiene según framework de aceptación social. Actualmente bloqueada por disponibilidad de agua caliente y motivación personal.",
+            status: "IN_PROGRESS",
+            points: 5,
+            epicId: 1,
+            sprintId: 1,
+            assignee: user.name.split(' ').map(n => n[0]).join(''),
+            priority: "MEDIUM",
+            tags: ["hygiene", "blocked"]
+          },
+          {
+            id: 3,
+            title: "Como persona con cama, quiero hacerla para sentirme productivo",
+            description: "Historia de baja complejidad pero alto impacto psicológico. Entregada exitosamente después de 3 sprints de refinamiento y múltiples retrospectivas sobre técnicas de doblado de sábanas.",
+            status: "DONE",
+            points: 2,
+            epicId: 1,
+            sprintId: 1,
+            assignee: user.name.split(' ').map(n => n[0]).join(''),
+            priority: "LOW",
+            tags: ["quick-win", "psychological"]
+          }
+        ],
+        activeSprint: {
+          id: 1,
+          name: "Sprint de Supervivencia Básica",
+          startDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "ACTIVE",
+          goal: "Mantener la existencia operativa con KPIs mínimos de funcionalidad humana",
+          totalPoints: 89,
+          completedPoints: 23,
+          userId: user.id
+        }
+      };
+      
+      localStorage.setItem('aaas-data', JSON.stringify(initialData));
+    }
+    
+    // Start onboarding
+    renderStep();
+  });
+</script>
+</Layout>
