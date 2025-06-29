@@ -117,25 +117,25 @@ import Header from '../components/Header.astro';
   <!-- Mobile Bottom Navigation -->
   <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50">
     <div class="flex items-center justify-around">
-      <button onclick="scrollToKanban()" class="flex flex-col items-center space-y-1 p-2 text-blue-600">
+      <button onclick="window.location.href='/dashboard'" class="flex flex-col items-center space-y-1 p-2 text-blue-600">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
         </svg>
         <span class="text-xs">Board</span>
       </button>
       <button id="mobile-new-story" class="flex flex-col items-center space-y-1 p-2 text-gray-600">
-        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+        <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
         </div>
         <span class="text-xs">New</span>
       </button>
-      <button onclick="scrollToCharts()" class="flex flex-col items-center space-y-1 p-2 text-gray-600">
+      <button id="mobile-sprint-planning" class="flex flex-col items-center space-y-1 p-2 text-gray-600">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <span class="text-xs">Charts</span>
+        <span class="text-xs">Planning</span>
       </button>
     </div>
   </div>
@@ -236,6 +236,31 @@ import Header from '../components/Header.astro';
               assignee: user.name.split(' ').map(n => n[0]).join(''),
               priority: "MEDIUM",
               tags: ["recurring", "low-value"]
+            },
+            // Backlog stories (not in current sprint)
+            {
+              id: 6,
+              title: "As a food consumer, I want to buy groceries to avoid starvation",
+              description: "Nutritional sustainability epic with multiple dependencies: transportation, budget, and complex decision-making at the supermarket.",
+              status: "TODO",
+              points: 21,
+              epicId: 1,
+              sprintId: null,
+              assignee: user.name.split(' ').map(n => n[0]).join(''),
+              priority: "HIGH",
+              tags: ["complex", "dependencies"]
+            },
+            {
+              id: 7,
+              title: "As a social being, I want to call my mother to maintain family relationships",
+              description: "Critical stakeholder management task with high emotional complexity and unpredictable duration.",
+              status: "TODO",
+              points: 8,
+              epicId: 1,
+              sprintId: null,
+              assignee: user.name.split(' ').map(n => n[0]).join(''),
+              priority: "MEDIUM",
+              tags: ["emotional", "stakeholder"]
             }
           ],
           activeSprint: {
@@ -246,7 +271,7 @@ import Header from '../components/Header.astro';
             status: "ACTIVE",
             goal: "Maintain operational existence with minimum human functionality KPIs",
             totalPoints: 31,
-            completedPoints: 2,
+            completedPoints: 7,
             userId: user.id
           }
         };
@@ -321,6 +346,31 @@ import Header from '../components/Header.astro';
               assignee: user.name.split(' ').map(n => n[0]).join(''),
               priority: "MEDIUM",
               tags: ["recurring", "low-value"]
+            },
+            // Backlog stories (not in current sprint)
+            {
+              id: 6,
+              title: "Como persona que consume alimentos, quiero comprar groceries para evitar la inanición",
+              description: "Epic de sostenibilidad nutricional con múltiples dependencias: transporte, presupuesto, y toma de decisiones complejas en el supermercado.",
+              status: "TODO",
+              points: 21,
+              epicId: 1,
+              sprintId: null,
+              assignee: user.name.split(' ').map(n => n[0]).join(''),
+              priority: "HIGH",
+              tags: ["complex", "dependencies"]
+            },
+            {
+              id: 7,
+              title: "Como ser social, quiero llamar a mi madre para mantener relaciones familiares",
+              description: "Tarea crítica de gestión de stakeholders con alta complejidad emocional y duración impredecible.",
+              status: "TODO",
+              points: 8,
+              epicId: 1,
+              sprintId: null,
+              assignee: user.name.split(' ').map(n => n[0]).join(''),
+              priority: "MEDIUM",
+              tags: ["emotional", "stakeholder"]
             }
           ],
           activeSprint: {
@@ -331,7 +381,7 @@ import Header from '../components/Header.astro';
             status: "ACTIVE",
             goal: "Mantener la existencia operativa con KPIs mínimos de funcionalidad humana",
             totalPoints: 31,
-            completedPoints: 2,
+            completedPoints: 7,
             userId: user.id
           }
         };
@@ -354,7 +404,7 @@ import Header from '../components/Header.astro';
       });
       
       // Preserve sprint progress
-      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 2;
+      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 7;
       
       appData = localizedData;
       localStorage.setItem('aaas-data', JSON.stringify(appData));
@@ -728,238 +778,57 @@ import Header from '../components/Header.astro';
     }
     
     function renderBurndownChart() {
-      // Import and render the BurndownChart component
-      import('../components/BurndownChart.jsx').then(module => {
-        const BurndownChart = module.default;
-        
-        // Create a container for the React component
-        const container = document.getElementById('burndown-container');
-        
-        // For now, we'll render a placeholder that will be replaced by the actual component
-        // In a real implementation, you'd use a proper React renderer here
-        container.innerHTML = `
-          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-200">
-              <h3 class="text-sm font-semibold text-gray-900">Gráfico Burndown: "${appData.activeSprint.name}"</h3>
-            </div>
-            <div class="p-4">
-              <div id="burndown-chart-canvas-container"></div>
+      const sprint = appData.activeSprint;
+      const remainingPoints = sprint.totalPoints - sprint.completedPoints;
+      const daysRemaining = Math.ceil((new Date(sprint.endDate) - new Date()) / (1000 * 60 * 60 * 1000 * 24));
+      const velocity = (sprint.completedPoints / 11).toFixed(1);
+      const successProbability = Math.max(0, Math.min(100, 100 - (remainingPoints / (daysRemaining * velocity)) * 20));
+      
+      document.getElementById('burndown-container').innerHTML = `
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-gray-900">${t('dashboard.burndownTitle')}</h3>
+              <div class="flex items-center space-x-3 text-xs">
+                <div class="flex items-center space-x-1">
+                  <div class="w-3 h-0.5 bg-emerald-500 rounded" style="border: 1px dashed #10b981;"></div>
+                  <span class="text-gray-500">${t('dashboard.ideal')}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <div class="w-3 h-0.5 bg-blue-500 rounded"></div>
+                  <span class="text-gray-500">${t('dashboard.reality')}</span>
+                </div>
+              </div>
             </div>
           </div>
-        `;
-        
-        // Render the actual burndown chart
-        renderActualBurndownChart();
-      });
-    }
-    
-    function renderActualBurndownChart() {
-      const container = document.getElementById('burndown-chart-canvas-container');
-      if (!container) return;
-      
-      // Create canvas element
-      const canvas = document.createElement('canvas');
-      canvas.width = 500;
-      canvas.height = 250;
-      canvas.className = 'w-full border border-gray-100 rounded bg-white';
-      container.appendChild(canvas);
-      
-      const ctx = canvas.getContext('2d');
-      const sprint = appData.activeSprint;
-      
-      // Chart dimensions
-      const margin = { top: 20, right: 40, bottom: 40, left: 50 };
-      const chartWidth = canvas.width - margin.left - margin.right;
-      const chartHeight = canvas.height - margin.top - margin.bottom;
-      
-      // Sprint data
-      const totalPoints = sprint.totalPoints;
-      const completedPoints = sprint.completedPoints;
-      const remainingPoints = totalPoints - completedPoints;
-      const totalDays = 14; // 2 weeks
-      const daysElapsed = 11; // Current day
-      
-      // Generate ideal and actual data
-      const idealData = [];
-      const actualData = [];
-      
-      for (let day = 0; day <= totalDays; day++) {
-        // Ideal burndown (linear)
-        idealData.push(totalPoints - (totalPoints * day / totalDays));
-        
-        // Actual burndown (with realistic progression)
-        if (day <= daysElapsed) {
-          const dailyVelocity = completedPoints / daysElapsed;
-          const variance = Math.sin(day * 0.5) * 1.5;
-          const actualCompleted = Math.min(totalPoints, dailyVelocity * day + variance);
-          actualData.push(totalPoints - actualCompleted);
-        } else {
-          actualData.push(null);
-        }
-      }
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw background
-      ctx.fillStyle = '#FAFBFC';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw chart area
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(margin.left, margin.top, chartWidth, chartHeight);
-      
-      // Helper functions
-      const xScale = (day) => margin.left + (day / totalDays) * chartWidth;
-      const yScale = (points) => margin.top + ((totalPoints - points) / totalPoints) * chartHeight;
-      
-      // Draw grid
-      ctx.strokeStyle = '#E4E6EA';
-      ctx.lineWidth = 1;
-      
-      // Vertical grid lines
-      for (let day = 0; day <= totalDays; day += 2) {
-        const x = xScale(day);
-        ctx.beginPath();
-        ctx.moveTo(x, margin.top);
-        ctx.lineTo(x, margin.top + chartHeight);
-        ctx.stroke();
-      }
-      
-      // Horizontal grid lines
-      for (let i = 0; i <= 5; i++) {
-        const points = (totalPoints / 5) * i;
-        const y = yScale(points);
-        ctx.beginPath();
-        ctx.moveTo(margin.left, y);
-        ctx.lineTo(margin.left + chartWidth, y);
-        ctx.stroke();
-      }
-      
-      // Draw ideal line (dashed green)
-      ctx.strokeStyle = '#00875A';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([8, 4]);
-      ctx.beginPath();
-      
-      idealData.forEach((points, day) => {
-        const x = xScale(day);
-        const y = yScale(points);
-        if (day === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      // Draw actual line (solid blue)
-      ctx.strokeStyle = '#0052CC';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      
-      actualData.forEach((points, day) => {
-        if (points !== null) {
-          const x = xScale(day);
-          const y = yScale(points);
-          if (day === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
-      });
-      ctx.stroke();
-      
-      // Draw data points
-      ctx.fillStyle = '#0052CC';
-      actualData.forEach((points, day) => {
-        if (points !== null) {
-          const x = xScale(day);
-          const y = yScale(points);
-          ctx.beginPath();
-          ctx.arc(x, y, 4, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-      });
-      
-      // Draw current day indicator
-      const currentX = xScale(daysElapsed);
-      ctx.strokeStyle = '#FF8B00';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([2, 2]);
-      ctx.beginPath();
-      ctx.moveTo(currentX, margin.top);
-      ctx.lineTo(currentX, margin.top + chartHeight);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      // Labels
-      ctx.fillStyle = '#172B4D';
-      ctx.font = '11px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      
-      // X-axis labels
-      for (let day = 0; day <= totalDays; day += 2) {
-        const x = xScale(day);
-        const label = day === 0 ? 'Inicio' : day === totalDays ? 'Fin' : `Día ${day}`;
-        ctx.fillText(label, x, canvas.height - 10);
-      }
-      
-      // Y-axis labels
-      ctx.textAlign = 'right';
-      for (let i = 0; i <= 5; i++) {
-        const points = Math.round((totalPoints / 5) * (5 - i));
-        const y = yScale(points);
-        ctx.fillText(points.toString(), margin.left - 10, y + 4);
-      }
-      
-      // Add metrics below chart
-      const metricsContainer = document.createElement('div');
-      metricsContainer.className = 'grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm mt-4';
-      metricsContainer.innerHTML = `
-        <div class="bg-gray-50 p-3 rounded-lg">
-          <div class="font-medium text-gray-700 text-xs mb-1">Puntos Restantes</div>
-          <div class="text-lg font-bold ${remainingPoints > 20 ? 'text-red-600' : 'text-orange-600'}">${remainingPoints}</div>
-        </div>
-        <div class="bg-gray-50 p-3 rounded-lg">
-          <div class="font-medium text-gray-700 text-xs mb-1">Días Restantes</div>
-          <div class="text-lg font-bold text-orange-600">3</div>
-        </div>
-        <div class="bg-gray-50 p-3 rounded-lg">
-          <div class="font-medium text-gray-700 text-xs mb-1">Velocity Actual</div>
-          <div class="text-lg font-bold text-green-600">${(completedPoints / daysElapsed).toFixed(1)}</div>
-        </div>
-        <div class="bg-gray-50 p-3 rounded-lg">
-          <div class="font-medium text-gray-700 text-xs mb-1">Probabilidad de Éxito</div>
-          <div class="text-lg font-bold text-red-600">25%</div>
+          
+          <div class="p-4">
+            <div class="bg-gray-50 rounded-lg h-32 flex items-center justify-center mb-4">
+              <div class="text-center">
+                <div class="text-2xl mb-2">📉</div>
+                <p class="text-gray-500 text-xs">${t('dashboard.despairChart')}</p>
+                <p class="text-xs text-gray-400 mt-1">
+                  ${successProbability < 50 ? t('dashboard.trendWorsening') : t('dashboard.trendImproving')}
+                </p>
+              </div>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-gray-500">${t('dashboard.successProbability')}</span>
+                <span class="font-semibold ${successProbability < 30 ? 'text-red-600' : successProbability < 70 ? 'text-amber-600' : 'text-emerald-600'}">
+                  ${Math.round(successProbability)}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="h-2 rounded-full ${successProbability < 30 ? 'bg-red-500' : successProbability < 70 ? 'bg-amber-500' : 'bg-emerald-500'}" 
+                     style="width: ${successProbability}%"></div>
+              </div>
+            </div>
+          </div>
         </div>
       `;
-      
-      container.appendChild(metricsContainer);
     }
-    
-    // Mobile navigation functions
-    window.scrollToKanban = function() {
-      const kanbanContainer = document.getElementById('kanban-container');
-      if (kanbanContainer) {
-        kanbanContainer.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }
-    };
-    
-    window.scrollToCharts = function() {
-      const burndownContainer = document.getElementById('burndown-container');
-      if (burndownContainer) {
-        burndownContainer.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }
-    };
     
     // Drag and Drop functionality
     let draggedStoryId = null;
@@ -997,6 +866,358 @@ import Header from '../components/Header.astro';
           
           updateStoryStatus(draggedStoryId, newStatus);
         }
+      }
+    };
+    
+    // Sprint Planning Modal Functions
+    window.showSprintPlanningModal = function() {
+      const backlogStories = appData.stories.filter(s => !s.sprintId || s.sprintId === null);
+      
+      document.getElementById('modals-container').innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-2xl font-semibold">Sprint Planning</h2>
+                  <p class="opacity-90 mt-1">Planifica tu próximo sprint de existencia optimizada</p>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors p-2 rounded-lg hover:bg-white hover:bg-opacity-10">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex h-[70vh]">
+              <!-- Left Panel - Sprint Details -->
+              <div class="w-1/3 p-6 border-r border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Detalles del Sprint</h3>
+                
+                <div class="space-y-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Sprint</label>
+                    <input type="text" id="sprint-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Sprint de Supervivencia Avanzada" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Objetivo del Sprint</label>
+                    <textarea id="sprint-goal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none" rows="4" placeholder="Mantener la funcionalidad básica mientras se optimizan los procesos de higiene personal..."></textarea>
+                  </div>
+
+                  <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 class="font-medium text-gray-900 mb-4">Métricas del Sprint</h4>
+                    <div class="space-y-3 text-sm" id="sprint-metrics-planning">
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Historias Seleccionadas:</span>
+                        <span class="font-medium text-purple-600" id="selected-count">0</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Story Points Totales:</span>
+                        <span class="font-medium text-purple-600" id="total-points">0</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Duración:</span>
+                        <span class="font-medium">2 semanas</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Velocity Estimada:</span>
+                        <span class="font-medium" id="velocity-estimate">Conservadora</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button onclick="startNewSprint()" id="start-sprint-btn" disabled class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-purple-600">
+                    Iniciar Sprint
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Panel - Story Selection -->
+              <div class="flex-1 p-6 overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="text-lg font-semibold text-gray-900">Product Backlog</h3>
+                  <button onclick="showNewStoryFormInPlanning()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm inline-flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nueva Historia
+                  </button>
+                </div>
+
+                <!-- New Story Form -->
+                <div id="new-story-form-planning" class="hidden bg-blue-50 p-6 rounded-lg mb-6 border border-blue-200">
+                  <h4 class="font-medium text-gray-900 mb-4">Crear Nueva Historia de Usuario</h4>
+                  
+                  <div class="space-y-4">
+                    <div>
+                      <input type="text" id="new-story-title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Como [rol], quiero [acción] para [beneficio]" />
+                    </div>
+
+                    <div>
+                      <textarea id="new-story-description" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" rows="3" placeholder="Descripción y criterios de aceptación..."></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600 font-medium">Points:</span>
+                        <div id="points-selector">
+                          ${[1, 2, 3, 5, 8].map(points => `
+                            <button type="button" onclick="selectPointsInPlanning(${points})" class="points-btn w-8 h-8 rounded-full text-sm font-bold transition-colors ${points === 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" data-points="${points}">
+                              ${points}
+                            </button>
+                          `).join('')}
+                        </div>
+                      </div>
+                      
+                      <div class="flex space-x-2">
+                        <button onclick="hideNewStoryFormInPlanning()" class="px-3 py-2 text-gray-600 hover:text-gray-800 text-sm">Cancelar</button>
+                        <button onclick="createNewStoryInPlanning()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Crear</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stories List -->
+                <div class="space-y-3" id="backlog-stories">
+                  ${backlogStories.length === 0 ? `
+                    <div class="text-center py-12">
+                      <div class="text-gray-400 mb-4">
+                        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                      </div>
+                      <p class="text-gray-500">No hay historias en el backlog</p>
+                      <p class="text-sm text-gray-400 mt-1">Crea tu primera historia para comenzar</p>
+                    </div>
+                  ` : backlogStories.map(story => {
+                    const epic = appData.epics.find(e => e.id === story.epicId);
+                    return `
+                      <div class="story-card p-4 rounded-lg border cursor-pointer transition-all hover:shadow-sm border-gray-200 bg-white hover:border-gray-300" data-story-id="${story.id}" onclick="toggleStorySelection(${story.id})">
+                        <div class="flex items-start justify-between">
+                          <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                              <div class="story-checkbox w-5 h-5 rounded border-2 flex items-center justify-center transition-colors border-gray-300">
+                                <svg class="w-3 h-3 text-white hidden" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              </div>
+                              <h4 class="font-medium text-gray-900 text-sm flex-1">${story.title}</h4>
+                            </div>
+                            
+                            ${story.description ? `
+                              <p class="text-xs text-gray-600 mb-3 line-clamp-2">${story.description}</p>
+                            ` : ''}
+                            
+                            <div class="flex items-center space-x-3 text-xs">
+                              <span class="text-gray-500">${epic?.title}</span>
+                              <span class="px-2 py-1 rounded font-medium ${
+                                story.priority === 'CRITICAL' ? 'bg-red-100 text-red-800' :
+                                story.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }">
+                                ${story.priority}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div class="ml-4 flex items-center space-x-2">
+                            <span class="inline-flex items-center justify-center w-8 h-8 text-xs font-bold rounded-full ${
+                              story.points <= 3 ? 'bg-green-200 text-green-800' :
+                              story.points <= 8 ? 'bg-yellow-200 text-yellow-800' :
+                              'bg-red-200 text-red-800'
+                            }">
+                              ${story.points}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+    
+    // Sprint Planning Helper Functions
+    let selectedStories = [];
+    let selectedPoints = 3;
+    
+    window.toggleStorySelection = function(storyId) {
+      const storyCard = document.querySelector(`[data-story-id="${storyId}"]`);
+      const checkbox = storyCard.querySelector('.story-checkbox');
+      const checkIcon = checkbox.querySelector('svg');
+      
+      if (selectedStories.includes(storyId)) {
+        // Deselect
+        selectedStories = selectedStories.filter(id => id !== storyId);
+        storyCard.classList.remove('border-purple-300', 'bg-purple-50');
+        storyCard.classList.add('border-gray-200', 'bg-white');
+        checkbox.classList.remove('border-purple-500', 'bg-purple-500');
+        checkbox.classList.add('border-gray-300');
+        checkIcon.classList.add('hidden');
+      } else {
+        // Select
+        selectedStories.push(storyId);
+        storyCard.classList.remove('border-gray-200', 'bg-white');
+        storyCard.classList.add('border-purple-300', 'bg-purple-50');
+        checkbox.classList.remove('border-gray-300');
+        checkbox.classList.add('border-purple-500', 'bg-purple-500');
+        checkIcon.classList.remove('hidden');
+      }
+      
+      updateSprintMetrics();
+    };
+    
+    function updateSprintMetrics() {
+      const totalPoints = selectedStories.reduce((sum, id) => {
+        const story = appData.stories.find(s => s.id === id);
+        return sum + (story?.points || 0);
+      }, 0);
+      
+      document.getElementById('selected-count').textContent = selectedStories.length;
+      document.getElementById('total-points').textContent = totalPoints;
+      
+      const velocityEstimate = totalPoints > 50 ? 'Optimista' : totalPoints > 30 ? 'Realista' : 'Conservadora';
+      const velocityElement = document.getElementById('velocity-estimate');
+      velocityElement.textContent = velocityEstimate;
+      velocityElement.className = `font-medium ${
+        totalPoints > 50 ? 'text-red-600' : 
+        totalPoints > 30 ? 'text-amber-600' : 
+        'text-green-600'
+      }`;
+      
+      const startBtn = document.getElementById('start-sprint-btn');
+      const sprintName = document.getElementById('sprint-name').value;
+      startBtn.disabled = selectedStories.length === 0 || !sprintName.trim();
+    }
+    
+    window.showNewStoryFormInPlanning = function() {
+      document.getElementById('new-story-form-planning').classList.remove('hidden');
+    };
+    
+    window.hideNewStoryFormInPlanning = function() {
+      document.getElementById('new-story-form-planning').classList.add('hidden');
+      document.getElementById('new-story-title').value = '';
+      document.getElementById('new-story-description').value = '';
+      selectedPoints = 3;
+      updatePointsSelector();
+    };
+    
+    window.selectPointsInPlanning = function(points) {
+      selectedPoints = points;
+      updatePointsSelector();
+    };
+    
+    function updatePointsSelector() {
+      document.querySelectorAll('.points-btn').forEach(btn => {
+        const btnPoints = parseInt(btn.dataset.points);
+        if (btnPoints === selectedPoints) {
+          btn.className = 'points-btn w-8 h-8 rounded-full text-sm font-bold transition-colors bg-blue-600 text-white';
+        } else {
+          btn.className = 'points-btn w-8 h-8 rounded-full text-sm font-bold transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300';
+        }
+      });
+    }
+    
+    window.createNewStoryInPlanning = function() {
+      const title = document.getElementById('new-story-title').value;
+      const description = document.getElementById('new-story-description').value;
+      
+      if (title.trim()) {
+        const newStory = {
+          id: Date.now(),
+          title: title,
+          description: description || 'Sin descripción específica.',
+          status: 'TODO',
+          points: selectedPoints,
+          epicId: 1,
+          sprintId: null,
+          assignee: user.name.split(' ').map(n => n[0]).join(''),
+          priority: 'MEDIUM',
+          tags: ['new']
+        };
+        
+        appData.stories.push(newStory);
+        saveData();
+        hideNewStoryFormInPlanning();
+        
+        // Refresh the modal
+        closeModal();
+        showSprintPlanningModal();
+      }
+    };
+    
+    window.startNewSprint = function() {
+      const sprintName = document.getElementById('sprint-name').value;
+      const sprintGoal = document.getElementById('sprint-goal').value;
+      
+      if (selectedStories.length > 0 && sprintName.trim()) {
+        // Complete current sprint if exists
+        if (appData.activeSprint) {
+          appData.activeSprint.status = 'COMPLETED';
+        }
+        
+        // Calculate total points
+        const totalPoints = selectedStories.reduce((sum, id) => {
+          const story = appData.stories.find(s => s.id === id);
+          return sum + (story?.points || 0);
+        }, 0);
+        
+        // Create new sprint
+        const newSprint = {
+          id: Date.now(),
+          name: sprintName,
+          goal: sprintGoal || 'Optimizar la existencia mediante metodologías Agile aplicadas a la vida diaria',
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'ACTIVE',
+          totalPoints: totalPoints,
+          completedPoints: 0,
+          userId: user.id
+        };
+        
+        // Assign stories to new sprint
+        selectedStories.forEach(storyId => {
+          const story = appData.stories.find(s => s.id === storyId);
+          if (story) {
+            story.sprintId = newSprint.id;
+          }
+        });
+        
+        // Update app data
+        appData.activeSprint = newSprint;
+        if (!appData.sprints) appData.sprints = [];
+        appData.sprints.push(newSprint);
+        
+        saveData();
+        closeModal();
+        renderDashboard();
+        
+        // Show success message
+        setTimeout(() => {
+          const celebration = document.createElement('div');
+          celebration.innerHTML = `
+            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; 
+                        padding: 24px; border-radius: 16px; z-index: 1000; text-align: center;
+                        box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: celebrationPop 0.6s ease-out;">
+              <div style="font-size: 32px; margin-bottom: 12px;">🚀</div>
+              <div style="font-weight: 600; margin-bottom: 8px; font-size: 18px;">¡Sprint Iniciado!</div>
+              <div style="font-size: 14px; opacity: 0.9;">${sprintName} está ahora activo con ${selectedStories.length} historias</div>
+            </div>
+          `;
+          
+          document.body.appendChild(celebration);
+          
+          setTimeout(() => {
+            document.body.removeChild(celebration);
+          }, 3000);
+        }, 500);
       }
     };
     
@@ -1103,15 +1324,14 @@ import Header from '../components/Header.astro';
     
     window.closeModal = function() {
       document.getElementById('modals-container').innerHTML = '';
+      selectedStories = [];
     };
     
     // Event listeners
-    document.getElementById('sprint-planning-btn').addEventListener('click', () => {
-      alert(t('dashboard.sprintPlanningMessage'));
-    });
-    
+    document.getElementById('sprint-planning-btn').addEventListener('click', showSprintPlanningModal);
     document.getElementById('new-story-btn').addEventListener('click', showNewStoryModal);
     document.getElementById('mobile-new-story').addEventListener('click', showNewStoryModal);
+    document.getElementById('mobile-sprint-planning').addEventListener('click', showSprintPlanningModal);
     
     // Listen for language changes and update everything
     window.addEventListener('localeChanged', () => {
@@ -1128,7 +1348,7 @@ import Header from '../components/Header.astro';
       });
       
       // Preserve sprint progress
-      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 2;
+      localizedData.activeSprint.completedPoints = appData.activeSprint?.completedPoints || 7;
       
       appData = localizedData;
       saveData();
