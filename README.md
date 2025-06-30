@@ -88,16 +88,19 @@ AaaS is a functional parody of project management tools like JIRA and Asana, des
 <div align="center">
 
 ### Frontend
+
 [![Astro](https://img.shields.io/badge/Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build)
 [![Preact](https://img.shields.io/badge/Preact-673AB8?style=for-the-badge&logo=preact&logoColor=white)](https://preactjs.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
 ### State Management & Animation
+
 [![Nanostores](https://img.shields.io/badge/Nanostores-FF6B6B?style=for-the-badge)](https://github.com/nanostores/nanostores)
 [![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)](https://greensock.com)
 
 ### Development & Deployment
+
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://netlify.com)
 [![Bolt](https://img.shields.io/badge/Bolt-000000?style=for-the-badge)](https://bolt.new)
@@ -118,7 +121,7 @@ AaaS is a functional parody of project management tools like JIRA and Asana, des
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Modern browser with ES2022 support
 
@@ -126,7 +129,7 @@ AaaS is a functional parody of project management tools like JIRA and Asana, des
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/agile-as-a-service.git
+git clone https://github.com/CodeGeekR/Agile-as-a-Service.git
 cd agile-as-a-service
 
 # Install dependencies
@@ -156,26 +159,6 @@ npm run build        # Build for production
 npm run preview      # Preview production build
 npm run astro        # Run Astro CLI commands
 ```
-
----
-
-## 📱 Screenshots
-
-<div align="center">
-
-### 🏠 Landing Page
-![Landing Page](https://via.placeholder.com/800x400/0052CC/FFFFFF?text=AaaS+Landing+Page)
-
-### 📊 Dashboard
-![Dashboard](https://via.placeholder.com/800x400/F4F5F7/172B4D?text=Kanban+Board+of+Existence)
-
-### 📈 Burndown Chart
-![Burndown Chart](https://via.placeholder.com/800x400/E3FCEF/00875A?text=Existential+Burndown+Chart)
-
-### 📱 Mobile Experience
-![Mobile](https://via.placeholder.com/400x800/FF5D01/FFFFFF?text=Mobile+Optimized)
-
-</div>
 
 ---
 
@@ -231,21 +214,21 @@ graph TD
 
 ```css
 /* Primary Colors */
---primary: #0052CC;           /* Corporate Blue */
---primary-dark: #0043A3;      /* Darker Blue */
+--primary: #0052cc; /* Corporate Blue */
+--primary-dark: #0043a3; /* Darker Blue */
 
 /* Background Colors */
---bg-primary: #FAFBFC;        /* Light Gray */
---bg-secondary: #FFFFFF;      /* White */
+--bg-primary: #fafbfc; /* Light Gray */
+--bg-secondary: #ffffff; /* White */
 
 /* Text Colors */
---text-primary: #172B4D;      /* Dark Blue */
---text-secondary: #5E6C84;    /* Medium Gray */
+--text-primary: #172b4d; /* Dark Blue */
+--text-secondary: #5e6c84; /* Medium Gray */
 
 /* Status Colors */
---todo: #DFE1E6;             /* Gray */
---in-progress: #0052CC;       /* Blue */
---done: #00875A;             /* Green */
+--todo: #dfe1e6; /* Gray */
+--in-progress: #0052cc; /* Blue */
+--done: #00875a; /* Green */
 ```
 
 ### 🔤 Typography
@@ -257,6 +240,7 @@ graph TD
 ### 📐 Spacing System
 
 Based on 8px grid system for consistent spacing:
+
 - `4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px`
 
 ---
@@ -306,13 +290,13 @@ Based on 8px grid system for consistent spacing:
 
 ```javascript
 // Example usage
-import { t, setLocale } from '../i18n/index.js';
+import { t, setLocale } from "../i18n/index.js";
 
 // Get translated text
-const welcomeMessage = t('hero.title');
+const welcomeMessage = t("hero.title");
 
 // Change language
-setLocale('en');
+setLocale("en");
 ```
 
 ---
@@ -394,7 +378,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 🚀 Built by **samuraidev**
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-pythonweb.is--a.dev-0052CC?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDZINmEyIDIgMCAwMC0yIDJ2MTBhMiAyIDAgMDAyIDJoMTBhMiAyIDAgMDAyLTJWMTBhMiAyIDAgMDAtMi0yaDRNMTQgNGg2bTAgMHY2bTAtNkwxMCAxNCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+)](https://pythonweb.is-a.dev/)
-[![GitHub](https://img.shields.io/badge/GitHub-samuraidev-181717?style=for-the-badge&logo=github)](https://github.com/samuraidev)
+[![GitHub](https://img.shields.io/badge/GitHub-samuraidev-181717?style=for-the-badge&logo=github)](https://github.com/CodeGeekR)
 
 **Senior Frontend Developer** specializing in high-performance web applications
 
@@ -433,9 +417,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Transform your existence with methodological precision**
 
-[![Star this repo](https://img.shields.io/badge/⭐_Star_this_repo-If_you_enjoyed_AaaS-FFD700?style=for-the-badge)](https://github.com/username/agile-as-a-service)
+[![Star this repo](https://img.shields.io/badge/⭐_Star_this_repo-If_you_enjoyed_AaaS-FFD700?style=for-the-badge)](https://github.com/CodeGeekR/Agile-as-a-Service)
 
-*Built with ❤️ and excessive bureaucracy in 24 hours*
+_Built with ❤️ and excessive bureaucracy in 24 hours_
 
 </div>
 
