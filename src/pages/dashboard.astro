@@ -98,6 +98,50 @@ import Header from '../components/Header.astro';
           </div>
         </div>
       </div>
+
+      <!-- Gráfico de Desesperanza Existencial -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900" data-i18n="dashboard.despairChart">
+              Gráfico de desesperanza existencial
+            </h2>
+            <div class="flex items-center space-x-2 text-sm">
+              <div class="flex items-center space-x-1">
+                <div class="w-3 h-0.5 bg-red-600"></div>
+                <span class="text-gray-500" data-i18n="dashboard.reality">Realidad Deplorable</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div id="despair-chart" class="h-64 flex items-center justify-center">
+            <!-- Gráfico de desesperanza -->
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-sm text-red-600 font-medium" data-i18n="dashboard.trendWorsening">
+              Tendencia: Empeorando significativamente
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerta del Sistema -->
+      <div id="system-alert" class="bg-red-50 border border-red-200 rounded-xl p-6">
+        <div class="flex items-start">
+          <svg class="w-6 h-6 text-red-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-red-800 mb-2" data-i18n="dashboard.systemAlert">
+              🚨 Alerta del Sistema:
+            </h3>
+            <p class="text-red-700 leading-relaxed" data-i18n="dashboard.alertMessage">
+              Su existencia está significativamente por debajo de los KPIs establecidos. Se recomienda una reunión de crisis con su Scrum Master interno y considerar reducir el scope del sprint eliminando "dormir 8 horas".
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -130,7 +174,7 @@ import Header from '../components/Header.astro';
       initializeDefaultData();
     }
 
-    // Recent Activity Management
+    // Recent Activity Management - ONLY MODIFIED SECTION
     let recentActivities = JSON.parse(localStorage.getItem('aaas-recent-activities') || '[]');
     
     function addRecentActivity(type, storyTitle, details = '') {
@@ -151,7 +195,7 @@ import Header from '../components/Header.astro';
       // Save to localStorage
       localStorage.setItem('aaas-recent-activities', JSON.stringify(recentActivities));
       
-      // Update UI
+      // Update UI immediately
       renderRecentActivity();
     }
     
@@ -179,7 +223,7 @@ import Header from '../components/Header.astro';
         
         return `
           <div class="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0">
-            <div class="flex-shrink-0 w-6 h-6 ${color} rounded-full flex items-center justify-center">
+            <div class="flex-shrink-0 w-6 h-6 ${color} rounded-full flex items-center justify-center text-xs">
               ${icon}
             </div>
             <div class="flex-1 min-w-0">
@@ -264,6 +308,7 @@ import Header from '../components/Header.astro';
           t('dashboard.daysAgo', { days });
       }
     }
+    // END OF MODIFIED SECTION
     
     function initializeDefaultData() {
       const currentLocale = getLocale();
@@ -594,6 +639,264 @@ import Header from '../components/Header.astro';
       `;
     }
     
+    function renderBurndownChart() {
+      const container = document.getElementById('burndown-chart-container');
+      if (!container) return;
+      
+      const sprint = appData.activeSprint;
+      const remainingPoints = sprint.totalPoints - sprint.completedPoints;
+      const daysRemaining = Math.ceil((new Date(sprint.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+      const currentVelocity = sprint.completedPoints / Math.max(1, 11);
+      const successProbability = Math.max(0, Math.min(100, 100 - (remainingPoints / (daysRemaining * currentVelocity)) * 20));
+      
+      container.innerHTML = `
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-gray-900">
+                Gráfico Burndown: "${sprint.name}"
+              </h3>
+              <div class="flex items-center space-x-2 text-xs">
+                <div class="hidden sm:flex items-center space-x-4">
+                  <div class="flex items-center space-x-1">
+                    <div class="w-3 h-0.5 bg-green-600" style="border-top: 1px dashed #00875A"></div>
+                    <span class="text-gray-500">Ideal</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <div class="w-3 h-0.5 bg-blue-600"></div>
+                    <span class="text-gray-500">Real</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-4">
+            <div class="relative">
+              <canvas id="burndown-canvas" class="w-full border border-gray-100 rounded bg-white" width="400" height="200"></canvas>
+            </div>
+          </div>
+          
+          <div class="px-4 pb-4">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm mb-4">
+              <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="font-medium text-gray-700 text-xs mb-1">Puntos Restantes</div>
+                <div class="text-lg font-bold ${remainingPoints > 10 ? 'text-red-600' : 'text-orange-600'}">
+                  ${remainingPoints}
+                </div>
+              </div>
+              <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="font-medium text-gray-700 text-xs mb-1">Días Restantes</div>
+                <div class="text-lg font-bold ${daysRemaining <= 3 ? 'text-red-600' : 'text-orange-600'}">
+                  ${daysRemaining}
+                </div>
+              </div>
+              <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="font-medium text-gray-700 text-xs mb-1">Velocity Actual</div>
+                <div class="text-lg font-bold ${currentVelocity < 1 ? 'text-red-600' : 'text-green-600'}">
+                  ${currentVelocity.toFixed(1)}
+                </div>
+              </div>
+              <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="font-medium text-gray-700 text-xs mb-1">Probabilidad de Éxito</div>
+                <div class="text-lg font-bold ${successProbability < 30 ? 'text-red-600' : successProbability < 70 ? 'text-orange-600' : 'text-green-600'}">
+                  ${Math.round(successProbability)}%
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3 rounded-lg text-sm ${
+              successProbability < 30 ? 'bg-red-50 border border-red-200' : 
+              successProbability < 70 ? 'bg-yellow-50 border border-yellow-200' :
+              'bg-green-50 border border-green-200'
+            }">
+              <p class="${
+                successProbability < 30 ? 'text-red-800' : 
+                successProbability < 70 ? 'text-yellow-800' :
+                'text-green-800'
+              }">
+                <strong>
+                  ${successProbability < 30 ? '🚨 Alerta Crítica del Sistema:' : 
+                   successProbability < 70 ? '⚠️ Advertencia del Sistema:' :
+                   '✅ Estado del Sistema:'}
+                </strong> 
+                ${successProbability < 30 ? 
+                  ' Su existencia está significativamente por debajo de los KPIs establecidos. Se recomienda una reunión de crisis con su Scrum Master interno y considerar reducir el scope del sprint.' :
+                  successProbability < 70 ?
+                  ' Su productividad está en zona de riesgo. Considere implementar pair programming para tareas básicas y revisar impedimentos actuales.' :
+                  ' Su sprint está en buen camino. Mantenga el momentum actual y prepare la retrospectiva de éxitos.'
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Draw the burndown chart
+      drawBurndownChart();
+    }
+    
+    function drawBurndownChart() {
+      const canvas = document.getElementById('burndown-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const sprint = appData.activeSprint;
+      
+      // Set canvas size
+      canvas.width = 400;
+      canvas.height = 200;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Chart dimensions
+      const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      const chartWidth = canvas.width - margin.left - margin.right;
+      const chartHeight = canvas.height - margin.top - margin.bottom;
+      
+      // Data
+      const totalPoints = sprint.totalPoints;
+      const completedPoints = sprint.completedPoints;
+      const totalDays = 14; // 2 weeks
+      const daysElapsed = 11;
+      
+      // Scales
+      const xScale = (day) => margin.left + (day / totalDays) * chartWidth;
+      const yScale = (points) => margin.top + ((totalPoints - points) / totalPoints) * chartHeight;
+      
+      // Draw background
+      ctx.fillStyle = '#FAFBFC';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw grid
+      ctx.strokeStyle = '#E4E6EA';
+      ctx.lineWidth = 1;
+      
+      // Vertical lines
+      for (let day = 0; day <= totalDays; day += 2) {
+        const x = xScale(day);
+        ctx.beginPath();
+        ctx.moveTo(x, margin.top);
+        ctx.lineTo(x, margin.top + chartHeight);
+        ctx.stroke();
+      }
+      
+      // Horizontal lines
+      for (let points = 0; points <= totalPoints; points += 5) {
+        const y = yScale(points);
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(margin.left + chartWidth, y);
+        ctx.stroke();
+      }
+      
+      // Draw ideal line (dashed green)
+      ctx.strokeStyle = '#00875A';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(xScale(0), yScale(totalPoints));
+      ctx.lineTo(xScale(totalDays), yScale(0));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw actual line (solid blue)
+      ctx.strokeStyle = '#0052CC';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      
+      // Actual progress data points
+      const actualData = [
+        { day: 0, points: totalPoints },
+        { day: 3, points: totalPoints - 1 },
+        { day: 7, points: totalPoints - 2 },
+        { day: daysElapsed, points: totalPoints - completedPoints }
+      ];
+      
+      actualData.forEach((point, index) => {
+        const x = xScale(point.day);
+        const y = yScale(point.points);
+        
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        
+        // Draw point
+        ctx.fillStyle = '#0052CC';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+      
+      ctx.stroke();
+      
+      // Draw current day indicator
+      const currentX = xScale(daysElapsed);
+      ctx.strokeStyle = '#FF8B00';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(currentX, margin.top);
+      ctx.lineTo(currentX, margin.top + chartHeight);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    
+    function renderDespairChart() {
+      const container = document.getElementById('despair-chart');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div class="w-full h-full flex items-center justify-center">
+          <canvas id="despair-canvas" width="600" height="200"></canvas>
+        </div>
+      `;
+      
+      // Draw despair chart
+      const canvas = document.getElementById('despair-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw a declining happiness line
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      
+      const points = [
+        { x: 50, y: 50 },
+        { x: 150, y: 80 },
+        { x: 250, y: 120 },
+        { x: 350, y: 140 },
+        { x: 450, y: 160 },
+        { x: 550, y: 180 }
+      ];
+      
+      points.forEach((point, index) => {
+        if (index === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+      
+      ctx.stroke();
+      
+      // Add data points
+      ctx.fillStyle = '#DC2626';
+      points.forEach(point => {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+    
     // Drag and Drop Functions
     window.handleDragStart = function(event, storyId) {
       event.dataTransfer.setData('text/plain', storyId);
@@ -629,7 +932,7 @@ import Header from '../components/Header.astro';
         const oldStatus = story.status;
         story.status = newStatus;
         
-        // Update sprint points
+        // Update sprint points and add activity
         if (newStatus === 'DONE' && oldStatus !== 'DONE') {
           appData.activeSprint.completedPoints += story.points;
           addRecentActivity('completed', story.title, ' movida a Done');
@@ -701,18 +1004,6 @@ import Header from '../components/Header.astro';
       return colors[status];
     }
     
-    function renderBurndownChart() {
-      import('../components/BurndownChart.jsx').then(module => {
-        const BurndownChart = module.default;
-        const container = document.getElementById('burndown-chart-container');
-        if (container) {
-          // Render the burndown chart component
-          container.innerHTML = '<div id="burndown-chart-component"></div>';
-          // The actual chart rendering would happen here
-        }
-      });
-    }
-    
     // Global functions
     window.showCreateStoryModal = function() {
       addRecentActivity('created', 'Nueva historia', ' añadida al backlog');
@@ -723,6 +1014,7 @@ import Header from '../components/Header.astro';
       renderSprintMetrics();
       renderKanbanBoard();
       renderBurndownChart();
+      renderDespairChart();
       renderRecentActivity();
       
       // Update loading state
@@ -733,7 +1025,7 @@ import Header from '../components/Header.astro';
       
       // Show crisis indicator if needed
       const remainingPoints = appData.activeSprint.totalPoints - appData.activeSprint.completedPoints;
-      const daysRemaining = Math.ceil((new Date(appData.activeSprint.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+      const daysRemaining = Math.ceil((new Date(appData.activeSprint.endDate) - new Date()) / (1000 * 60 * 60 * 1000));
       if (remainingPoints > 10 && daysRemaining <= 3) {
         document.getElementById('crisis-indicator').classList.remove('hidden');
       }
